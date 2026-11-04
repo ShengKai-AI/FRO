@@ -1,0 +1,29 @@
+{
+  "version": "v4",
+  "benchmarks": [
+    "AVUT",
+    "WorldSense",
+    "Video-MME",
+    "MVBench",
+    "LongVideoBench",
+    "DailyOmni"
+  ],
+  "questions": 14140,
+  "pairs": 7071,
+  "retention": [
+    0.45,
+    0.35
+  ],
+  "models": [
+    "Qwen2.5-Omni-7B",
+    "Qwen2.5-Omni-3B"
+  ],
+  "format": "A4 portrait",
+  "source": "HTML",
+  "fonts": [
+    "Times New Roman",
+    "SimSun"
+  ],
+  "references": 15,
+  "pages": 7
+}

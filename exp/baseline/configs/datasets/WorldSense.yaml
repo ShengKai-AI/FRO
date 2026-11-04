@@ -1,0 +1,7 @@
+{
+  "name": "WorldSense",
+  "split": "test",
+  "expected_questions": 3172,
+  "max_frames": 128,
+  "subtitles": false
+}

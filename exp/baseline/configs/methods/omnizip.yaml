@@ -1,0 +1,7 @@
+{
+  "name": "omnizip",
+  "paper": "2511.14582",
+  "official": "https://github.com/KD-TAO/OmniZip",
+  "implementation": "OmniPack/baselines/omnizip + local partial-group core",
+  "adaptation": "audio-priority starting rho pairs (.30,.60) / (.40,.70); common offset count calibration including anchors"
+}

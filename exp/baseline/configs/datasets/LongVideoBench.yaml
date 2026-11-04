@@ -1,0 +1,7 @@
+{
+  "name": "LongVideoBench",
+  "split": "validation",
+  "expected_questions": 1337,
+  "max_frames": 256,
+  "subtitles": false
+}

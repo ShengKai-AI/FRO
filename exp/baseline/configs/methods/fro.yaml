@@ -1,0 +1,6 @@
+{
+  "name": "fro",
+  "paper": null,
+  "implementation": "src/fro/scoring.py",
+  "adaptation": "independent prefix score_layer=2; same-modality cross-stream support; original embedding replay; missing modalities receive no token allocation"
+}

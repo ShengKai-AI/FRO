@@ -1,0 +1,7 @@
+{
+  "name": "omnipack",
+  "paper": "2608.03812",
+  "official": "https://github.com/RowanSu/OmniPack",
+  "implementation": "official two-stage compressor",
+  "adaptation": "stage-I 2*r, stage-II .5; joint stage-II at 18 (7B) / 26 (3B)"
+}

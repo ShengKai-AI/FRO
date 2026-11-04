@@ -1,0 +1,12 @@
+{
+  "name": "omniselect",
+  "paper": "2605.18041",
+  "official": "https://github.com/Yangmrl-nlp/OmniSelect",
+  "implementation": "official OmniSelect + tracked pooling patch",
+  "adaptation": "AudioCLIP scoring, NLTK keyword filtering; pool by actual contiguous token groups; feature extraction microbatch=8",
+  "parents": [
+    "AudioCLIP",
+    "CLIP",
+    "ESResNeXt"
+  ]
+}

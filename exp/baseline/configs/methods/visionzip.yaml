@@ -1,0 +1,7 @@
+{
+  "name": "visionzip",
+  "paper": "2412.04467",
+  "official": "https://github.com/JIA-Lab-research/VisionZip",
+  "implementation": "OmniPack/baselines/visionzip",
+  "adaptation": "90% salience / 10% contextual retained budget; audio uniform"
+}

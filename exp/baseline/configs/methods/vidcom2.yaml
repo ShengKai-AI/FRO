@@ -1,0 +1,7 @@
+{
+  "name": "vidcom2",
+  "paper": "2505.14454",
+  "official": "https://github.com/xuyang-liu16/VidCom2",
+  "implementation": "official omni branch/token_compressor/vidcom2",
+  "adaptation": "per-stream video selection; audio uniform; label-blind count calibration"
+}

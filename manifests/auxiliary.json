@@ -1,0 +1,16 @@
+[
+  {
+    "name": "AudioCLIP-Full-Training.pt",
+    "url": "https://github.com/AndreyGuzhov/AudioCLIP/releases/download/v0.1/AudioCLIP-Full-Training.pt",
+    "destination": "weights",
+    "sha256": "2441d35b353352c8b1bbfb8f7c687f46314c3d2909e940eaf763b8c17f632c44",
+    "bytes": 537302068
+  },
+  {
+    "name": "bpe_simple_vocab_16e6.txt.gz",
+    "url": "https://openaipublic.azureedge.net/clip/bpe_simple_vocab_16e6.txt.gz",
+    "destination": "audioclip_assets",
+    "sha256": "924691ac288e54409236115652ad4aa250f48203de50a9e4722a6ecd48d6804a",
+    "bytes": 1356917
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "name": "fastv",
+  "paper": "2403.06764",
+  "official": "https://github.com/pkunlp-icler/FastV",
+  "implementation": "OmniPack/baselines/fastv + fastv_omni",
+  "adaptation": "joint layer-5 AV selection, final budget (no layer-average conversion); native KV pruning"
+}

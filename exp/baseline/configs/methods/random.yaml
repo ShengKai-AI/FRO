@@ -1,0 +1,6 @@
+{
+  "name": "random",
+  "paper": null,
+  "implementation": "per-modality stable seeded sampling",
+  "parent": "Qwen2.5-Omni"
+}

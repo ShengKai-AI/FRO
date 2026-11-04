@@ -1,0 +1,22 @@
+{
+  "OmniPack": {
+    "url": "https://github.com/RowanSu/OmniPack.git",
+    "revision": "aecfa53c6c041eae35a0eb3bc287e2d6671d994c"
+  },
+  "OmniSelect": {
+    "url": "https://github.com/Yangmrl-nlp/OmniSelect.git",
+    "revision": "53d2feedf410645f4f156aa4ae4619c1816f6a34"
+  },
+  "OmniZip": {
+    "url": "https://github.com/KD-TAO/OmniZip.git",
+    "revision": "c5eab030b394967c7d1209307d102975dcee35c1"
+  },
+  "VidCom2-omni": {
+    "url": "https://github.com/xuyang-liu16/VidCom2.git",
+    "revision": "19981d9e304fbf5e6081e0d959af523a2be6977c"
+  },
+  "FastVID": {
+    "url": "https://github.com/LunarShen/FastVID.git",
+    "revision": "a40a109cb8df20e8c2c17c6850f8269717369990"
+  }
+}

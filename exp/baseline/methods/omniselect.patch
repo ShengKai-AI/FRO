@@ -1,0 +1,67 @@
+diff --git a/OmniSelect/OmniSelect.py b/OmniSelect/OmniSelect.py
+index 6ec5362..24b0b8c 100644
+--- a/OmniSelect/OmniSelect.py
++++ b/OmniSelect/OmniSelect.py
+@@ -183,22 +183,10 @@ def omniselect(
+     num_a.append(cnt+1)
+     
+     if prune_need['video_first'] == True: 
+-        if len(logits_v) % 4 != 0:
+-            k = len(logits_v) // 4
+-            main = logits_v[:k * 4].view(-1, 4)   # [k, 4]
+-            main_avg = main.mean(dim=1)  
+-            tail_avg = logits_v[k * 4:].mean().unsqueeze(0)
+-            pooled_v = torch.cat([main_avg, tail_avg])
+-        else:
+-            if len(logits_v) // 4 == len(num_v):
+-                pooled_v = torch.mean(logits_v.view(-1, 4),dim = 1)
+-            else:
+-                k = len(num_v) - 1
+-                main = logits_v[:k * 4].view(-1, 4) 
+-                main_avg = main.mean(dim=1)  
+-                tail_avg = logits_v[k * 4:].mean().unsqueeze(0)
+-                pooled_v = torch.cat([main_avg, tail_avg])
+-        
++        # Local dataset adapter: semantic scores pooled over actual contiguous
++        # video-token groups. This also handles frame caps and fractional FPS.
++        pooled_v = prune_need['pooled_logits_v']
++
+         weights = allocate_pruning_weights(pooled_v,num_v,total_pruning_ratio=merge_ratio_v)
+         print("video first, pruning ratio are: ",weights)
+         
+@@ -263,32 +251,9 @@ def omniselect(
+                 'audio')
+         
+     elif prune_need['video_first'] == False: 
+-        if len(logits_a) > len(logits_v):
+-            prefix = logits_a[:-2]
+-            last_avg = logits_a[-2:].mean(dim=0, keepdim=True)
+-            logits_a = torch.cat([prefix, last_avg], dim=0)
+-        elif len(logits_a) % 4 != 0:
+-            k = len(logits_a) // 4
+-            r = len(logits_a) % 4
+-            main = logits_a[:k * 4].view(-1, 4)   # [4, k]
+-            main_avg = main.mean(dim=1)  
+-            tail_avg = logits_a[k * 4:].mean().unsqueeze(0)
+-            pooled_a = torch.cat([main_avg, tail_avg])
+-        else:
+-            if len(logits_a) // 4 == len(num_a):
+-                pooled_a = torch.mean(logits_a.view(-1, 4),dim = 1)
+-            else:
+-                k = len(num_v) - 1
+-                main = logits_a[:k * 4].view(-1, 4)   # [k, 4]
+-                main_avg = main.mean(dim=1)  
+-                tail_avg = logits_a[k * 4:].mean().unsqueeze(0)
+-                if len(num_a) > k:
+-                   pooled_a = torch.cat([main_avg, tail_avg])
+-                else:
+-                   main_avg[-1] = (main_avg[-1] + tail_avg[-1]) / 2.0
+-                   pooled_a = main_avg
+-                
+-        
++        # Same temporal-group alignment for the original audio-token ordering.
++        pooled_a = prune_need['pooled_logits_a']
++
+         weights = allocate_pruning_weights(pooled_a,num_a,total_pruning_ratio=merge_ratio_a) 
+         print('audio first, pruning ratio are:',weights)
+         cur_timegroup = None

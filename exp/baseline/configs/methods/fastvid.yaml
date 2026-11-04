@@ -1,0 +1,7 @@
+{
+  "name": "fastvid",
+  "paper": "2503.11187",
+  "official": "https://github.com/LunarShen/FastVID",
+  "implementation": "official Qwen2.5-VL core",
+  "adaptation": "bounded short-frame segmentation; DySeg_ignore=1.0; retain merged features and representative positions"
+}

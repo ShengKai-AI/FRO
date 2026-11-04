@@ -1,0 +1,7 @@
+{
+  "name": "MVBench",
+  "split": "test",
+  "expected_questions": 4000,
+  "max_frames": 128,
+  "subtitles": false
+}

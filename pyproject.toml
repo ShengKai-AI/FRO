@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fro-av"
+version = "0.1.0"
+description = "Reproducible paired audio-video token compression experiments"
+requires-python = ">=3.11,<3.12"
+dependencies = ["torch==2.6.0", "torchvision==0.21.0", "transformers==4.57.1", "accelerate==1.12.0", "numpy==1.26.4", "av==14.2.0", "huggingface-hub==0.36.2", "safetensors==0.7.0", "PyYAML==6.0.3", "qwen-vl-utils==0.0.14", "librosa==0.11.0", "nltk==3.9.1", "einops==0.8.1", "pyarrow==18.1.0", "pandas==2.2.3", "loguru==0.7.3", "requests>=2.32,<3", "ftfy==6.3.1", "pytorch-ignite==0.5.2", "termcolor==2.5.0", "visdom==0.2.4", "torchaudio==2.6.0"]
+
+[project.optional-dependencies]
+cuda = ["flash-attn==2.7.4.post1"]
+docs = ["playwright", "pymupdf"]
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["fro*", "exp*", "scripts*"]
+exclude = ["third_party*", "tests*"]
+
+[tool.uv.extra-build-dependencies]
+visdom = ["setuptools==80.9.0"]

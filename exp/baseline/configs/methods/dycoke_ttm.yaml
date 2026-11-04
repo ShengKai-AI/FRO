@@ -1,0 +1,7 @@
+{
+  "name": "dycoke_ttm",
+  "paper": "2411.15024",
+  "official": "https://github.com/KD-TAO/DyCoke",
+  "implementation": "four-frame temporal ranking adapted from VidCom2 omni TTM port",
+  "adaptation": "one anchor frame per group; exact remaining integer counts allocated across non-anchor frames in stable order; no posthoc truncation; no dynamic decode KV compression; infeasible anchor floors fail"
+}

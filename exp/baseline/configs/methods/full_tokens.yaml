@@ -1,0 +1,6 @@
+{
+  "name": "full_tokens",
+  "paper": null,
+  "implementation": "unmodified Qwen thinker",
+  "parent": "Qwen2.5-Omni"
+}

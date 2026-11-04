@@ -1,0 +1,7 @@
+{
+  "name": "Video-MME",
+  "split": "test",
+  "expected_questions": 2700,
+  "max_frames": 768,
+  "subtitles": false
+}

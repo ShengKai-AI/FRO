@@ -1,0 +1,70 @@
+{
+  "full_tokens": {
+    "paper": null,
+    "implementation": "unmodified Qwen thinker",
+    "parent": "Qwen2.5-Omni"
+  },
+  "random": {
+    "paper": null,
+    "implementation": "per-modality stable seeded sampling",
+    "parent": "Qwen2.5-Omni"
+  },
+  "fastv": {
+    "paper": "2403.06764",
+    "official": "https://github.com/pkunlp-icler/FastV",
+    "implementation": "OmniPack/baselines/fastv + fastv_omni",
+    "adaptation": "joint layer-5 AV selection, final budget (no layer-average conversion); native KV pruning"
+  },
+  "visionzip": {
+    "paper": "2412.04467",
+    "official": "https://github.com/JIA-Lab-research/VisionZip",
+    "implementation": "OmniPack/baselines/visionzip",
+    "adaptation": "90% salience / 10% contextual retained budget; audio uniform"
+  },
+  "fastvid": {
+    "paper": "2503.11187",
+    "official": "https://github.com/LunarShen/FastVID",
+    "implementation": "official Qwen2.5-VL core",
+    "adaptation": "bounded short-frame segmentation; DySeg_ignore=1.0; retain merged features and representative positions"
+  },
+  "vidcom2": {
+    "paper": "2505.14454",
+    "official": "https://github.com/xuyang-liu16/VidCom2",
+    "implementation": "official omni branch/token_compressor/vidcom2",
+    "adaptation": "per-stream video selection; audio uniform; label-blind count calibration"
+  },
+  "dycoke_ttm": {
+    "paper": "2411.15024",
+    "official": "https://github.com/KD-TAO/DyCoke",
+    "implementation": "four-frame temporal ranking adapted from VidCom2 omni TTM port",
+    "adaptation": "one anchor frame per group; exact remaining integer counts allocated across non-anchor frames in stable order; no posthoc truncation; no dynamic decode KV compression; infeasible anchor floors fail"
+  },
+  "omnizip": {
+    "paper": "2511.14582",
+    "official": "https://github.com/KD-TAO/OmniZip",
+    "implementation": "OmniPack/baselines/omnizip + local partial-group core",
+    "adaptation": "audio-priority starting rho pairs (.30,.60) / (.40,.70); common offset count calibration including anchors"
+  },
+  "omniselect": {
+    "paper": "2605.18041",
+    "official": "https://github.com/Yangmrl-nlp/OmniSelect",
+    "implementation": "official OmniSelect + tracked pooling patch",
+    "adaptation": "AudioCLIP scoring, NLTK keyword filtering; pool by actual contiguous token groups; feature extraction microbatch=8",
+    "parents": [
+      "AudioCLIP",
+      "CLIP",
+      "ESResNeXt"
+    ]
+  },
+  "omnipack": {
+    "paper": "2608.03812",
+    "official": "https://github.com/RowanSu/OmniPack",
+    "implementation": "official two-stage compressor",
+    "adaptation": "stage-I 2*r, stage-II .5; joint stage-II at 18 (7B) / 26 (3B)"
+  },
+  "fro": {
+    "paper": null,
+    "implementation": "src/fro/scoring.py",
+    "adaptation": "independent prefix score_layer=2; same-modality cross-stream support; original embedding replay; missing modalities receive no token allocation"
+  }
+}

@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.env*
+local.*
+weights/*
+data/*
+third_party/*
+runs/*
+docs/assets/
+*.log
+*.partial
