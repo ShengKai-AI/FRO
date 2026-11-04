@@ -1,5 +1,5 @@
 {
-  "version": "v4",
+  "version": "v5_matched_flops",
   "benchmarks": [
     "AVUT",
     "WorldSense",
@@ -10,10 +10,6 @@
   ],
   "questions": 14140,
   "pairs": 7071,
-  "retention": [
-    0.45,
-    0.35
-  ],
   "models": [
     "Qwen2.5-Omni-7B",
     "Qwen2.5-Omni-3B"
@@ -25,5 +21,12 @@
     "SimSun"
   ],
   "references": 15,
-  "pages": 7
+  "pages": 8,
+  "budget_mode": "matched_flops_dagger",
+  "fro_anchor_retentions": [
+    0.45,
+    0.35
+  ],
+  "auxiliary_delta_complete": false,
+  "plan_pdf_sha256": "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6"
 }

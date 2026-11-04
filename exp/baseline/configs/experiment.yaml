@@ -1,6 +1,8 @@
-schema_version: 1
+schema_version: 2
 models: [3B, 7B]
-retentions: [0.45, 0.35]
+budget_mode: matched_flops_dagger
+fro_anchor_retentions: [0.45, 0.35]
+matched_reference: docs/matched_budgets.json
 methods: [full_tokens, random, fastv, visionzip, fastvid, vidcom2, dycoke_ttm, omnizip, omniselect, omnipack, fro]
 datasets: [AVUT, WorldSense, Video-MME, MVBench, LongVideoBench, DailyOmni]
 seed: 20261031

@@ -105,6 +105,7 @@ def load(method, model_name, ratio, max_new_tokens=32):
      finally:
       for h in handles:h.remove()
      token=thinker.lm_head(out.last_hidden_state[:,-1:]).argmax(-1);cache=out.past_key_values;tokens=[];start=int(pos.max())+1
+     state['layer_kv_prefill_lengths']=[int(cache.get_seq_length(i)) for i in range(len(thinker.model.layers))]
      torch.cuda.synchronize();first=time.perf_counter()
      eos=thinker.generation_config.eos_token_id;eos=set(eos if isinstance(eos,list) else [eos]);stop=False;budget=max_new_tokens
      for step in range(budget):

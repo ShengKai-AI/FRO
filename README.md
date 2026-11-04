@@ -1,19 +1,19 @@
 # FRO: paired audio-video compression experiments
 
 Experiment code lives in `exp/baseline/`; the proposed FRO scorer lives in `src/fro/`.
-The plan compares Qwen2.5-Omni **3B / 7B**, **45% / 35% final AV-token retention**, and six datasets: AVUT Human, WorldSense, Video-MME, MVBench, LongVideoBench, DailyOmni. Decoding is greedy, once per question pair, with at most 32 new tokens.
+The plan compares Qwen2.5-Omni **3B / 7B**, **two matched FLOPs† budgets anchored at FRO 45% / 35% retention**, and six datasets: AVUT Human, WorldSense, Video-MME, MVBench, LongVideoBench, DailyOmni. Decoding is greedy, once per question pair, with at most 32 new tokens.
 
 [Experiment plan (PDF)](docs/experiment_plan.pdf) · [HTML source](docs/experiment_plan.html) · [Baseline papers and implementation lineage](docs/baseline_sources.md) · [Reproduction](docs/reproduction.md) · [Validation evidence](results/validation_summary.json)
 
-## Current validation and scope
+## Current experiment and scope
 
-A single real Video-MME question pair, with 8 frames per video for this short validation only, exercised all 11 methods on the 7B model. Independent jobs ran on four physical A100 GPUs. DyCoke-TTM and OmniZip received a targeted 45%/35% budget repair check. This is a repository integration check, not a benchmark result. See the saved evidence for exact counts, failures before repair, measured ratios and GPU activity.
+The current document is **v5 matched FLOPs**, with separate pre-LLM and final retention per method. The 42 model/method/budget reference rows are reproduced exactly by `exp/baseline/metrics/flops.py`. See [matched budget table](docs/matched_budgets.csv). Reference FLOPs† exclude auxiliary delta; they are not complete per-dataset measured costs.
 
-Full six-dataset evaluation has **not** started. The following work remains before claiming full plan reproduction:
+The **Full Tokens stage has started** over the frozen Video-MME manifest: 2,700 questions, 1,350 pairs and 900 local videos. The controller prepares inputs independently of GPU jobs, runs one initial real-input validation, then uses all four available A100s. It waits for each model's weights independently; a pending 3B download does not block ready 7B work. Live progress is in `runs/v5-videomme-fulltokens/progress.json`.
 
-- Validate long-audio segment timestamp remapping and joint resampling when audio alone exceeds the paired input budget. These paths currently fail explicitly instead of truncating input.
-- Validate missing-audio variants for every baseline (OmniSelect currently rejects absent audio), all six dataset media resolvers, 3B execution and the full budget matrix.
-- Measure selection/merging and auxiliary-model FLOPs. Decoder estimates are available; total FLOPs are left unmeasured. Bootstrap confidence intervals and the final six-dataset main table await complete results.
+Main-run inputs use the planned candidate frame rate and dataset cap, without the previous eight-frame validation override. Unsupported long-audio and over-budget joint resampling cases remain explicit blocked pairs in the full denominator. Compressed main runs are gated on actual-input calibration including auxiliary delta. A reference retention copied from the PDF cannot bypass this gate.
+
+Earlier repository integration evidence remains in `results/validation_summary.json`: one real short pair, all 11 methods on 7B, four physical GPUs. It is not a benchmark score. Remaining work includes long-audio timestamp remapping, missing-audio variants, complete auxiliary FLOPs, all other dataset media resolvers, bootstrap confidence intervals and the final main table.
 
 ## Install
 
@@ -50,11 +50,11 @@ uv run python -m exp.baseline.prepare --dataset Video-MME \
 uv run python -m scripts.preflight
 # Creates inspectable jobs; no GPU workers start without --execute.
 uv run python -m exp.baseline.run --dataset Video-MME --run videomme-v4
-# When the required preprocessing adaptations have been validated:
+# Starts the Full Tokens stage for already prepared inputs:
 uv run python -m exp.baseline.run --dataset Video-MME --run videomme-v4 --execute
 ```
 
-The queue respects inherited `CUDA_VISIBLE_DEVICES`, checks existing compute processes and binds one worker to each permitted free GPU. Job outputs, logs and monitoring are isolated under `runs/<name>/`. For partial runs use `--models`, `--methods`, `--ratios` or `--pair-ids`. Never use `--validation-frame-cap` for main benchmark results.
+The queue respects inherited `CUDA_VISIBLE_DEVICES`, checks existing compute processes and binds one worker to each permitted free GPU. Job outputs, logs and monitoring are isolated under `runs/<name>/`. For partial runs use `--models`, `--methods` or `--pair-ids`. Never use `--validation-frame-cap` for main benchmark results.
 
 ## Layout
 

@@ -28,7 +28,7 @@ python -m exp.baseline.report --run runs/videomme-v4 --output results/videomme-v
 
 Evaluation requires every selected job result to be present and passing, rejects duplicate scored IDs and parses Q1/Q2 separately. Its current summaries apply to the selected job scope. Pass `--require-full-coverage` with the complete dataset gold manifest before calling it a complete benchmark. MVBench's main-table metric must use the macro-average over its 20 task accuracies. The cross-dataset relative main table and video-pair bootstrap have not yet been implemented.
 
-Decoder accounting uses actual per-layer prefill lengths, GQA projection dimensions, causal attention, and a fixed 100-output-token decode convention. It counts 1 MAC as 2 FLOPs. `results/decoder_flops_example.csv` uses an illustrative 8,192-token input, including 256 text tokens; it is not measured dataset cost. Norm/softmax/RoPE are excluded from the analytical decoder component. Independent FRO scoring, AudioCLIP, selection and merging costs are not measured and total FLOPs remain null; they must not be replaced with zero. Encoder costs are included in runtime timing but excluded from this analytical component.
+v5 decoder accounting uses actual per-layer prefill and KV lengths, GQA projection dimensions, dense attention matrices, and 100 decode steps, exactly as defined in the current PDF. It counts 1 MAC as 2 FLOPs. `results/archive/v4_decoder_flops_example.csv` is a superseded v4 illustration and must not be used for v5 comparisons. Current reference budgets are in `docs/matched_budgets.csv`. Norm/softmax/RoPE are excluded from the analytical decoder component. Independent FRO scoring, AudioCLIP, selection and merging costs are not measured and total FLOPs remain null; they must not be replaced with zero. Encoder costs are included in runtime timing but excluded from this analytical component.
 
 ## Method adaptations
 
@@ -37,3 +37,12 @@ See `manifests/methods.json`. FastV-AV executes five full layers and prunes in t
 ## PDF rebuilding
 
 The checked-in PDF was exported from the HTML using Chromium, A4 portrait, Times New Roman and SimSun, with the references last. For a rebuild, install the document extra and Playwright Chromium and supply licensed fonts under `docs/assets/` (`times.ttf`, `timesbd.ttf`, `timesi.ttf`, `simsun.ttf`); then run `python docs/export_pdf.py`. Font binaries are intentionally excluded from version control.
+
+## Start/continue the v5 baseline stage
+
+```bash
+python -m exp.baseline.campaign --pairs data/pairs/v5/Video-MME.json \
+  --media-map data/pairs/v5/Video-MME.media.json --run v5-videomme-fulltokens --prep-workers 6
+```
+
+The controller keeps a complete source manifest, runs ready Full Tokens jobs on available GPUs, and retains unsupported preparation records with reasons. Downloads run separately. Do not start a second controller for the same run; a process lock prevents that. Model-specific compressed matching is gated on complete auxiliary-cost calibration. Main run resumption must use the same manifest, media map and plan hash.

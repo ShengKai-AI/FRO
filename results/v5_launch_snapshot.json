@@ -1,0 +1,38 @@
+{
+  "plan": "v5_matched_flops",
+  "plan_sha256": "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6",
+  "reference_formula_rows_verified": 42,
+  "phase": "Full Tokens main stage",
+  "scope": {
+    "pairs_sha256": "6697e89477e70d633acc916a6d85a252f4d632de130b8908d36fe75a562693c3",
+    "media_map_sha256": "cfc2cbfb2da71ed50fae947f8ce8691bfa6a550d38172706eacf1c69c8af6f0e",
+    "plan_sha256": "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6",
+    "models": [
+      "7B",
+      "3B"
+    ],
+    "source_pairs": 1350,
+    "source_questions": 2700,
+    "stage": "full_tokens",
+    "budget_mode": "matched_flops_dagger",
+    "validation_frame_cap": null
+  },
+  "snapshot_time": 1793783851.6083288,
+  "passed_pairs_by_model": {
+    "7B": 36
+  },
+  "waiting_models": [
+    "3B"
+  ],
+  "blocked_pairs": 0,
+  "failed_inference": 0,
+  "max_concurrent_gpu_workers": 4,
+  "observed_gpu_peak_utilization": {
+    "0": 100,
+    "1": 100,
+    "2": 100,
+    "3": 100
+  },
+  "live_progress": "runs/v5-videomme-fulltokens/progress.json",
+  "compressed_main_stage": "awaiting complete actual-input auxiliary-cost calibration"
+}

@@ -1,22 +1,51 @@
-"""Analytical decoder FLOPs; 1 multiply-add = 2 FLOPs.
+"""v5 dense-matrix FLOPs convention, 1 MAC = 2 FLOPs.
 
-Dense Q/K/V/O + SwiGLU and causal attention. Norm, RoPE, softmax and
-selection/auxiliary models are excluded from this component, never counted as zero
-in the total. Decode uses final retained KV lengths (all-layer cache pruning).
+Matches the reviewed plan exactly at its reference input. Real runs pass measured
+per-layer prefill and KV lengths. LM head, encoders and elementwise operators are
+excluded from FLOPs-dagger; unmeasured auxiliary delta is never silently zeroed.
 """
-def layer_flops(config, n, context=None):
-    d=config['hidden_size']; h=config['num_attention_heads']; kv=config['num_key_value_heads']
-    hd=config.get('head_dim',d//h); inter=config['intermediate_size']
-    projections=2*n*(d*h*hd+2*d*kv*hd+h*hd*d+3*d*inter)
-    pairs=n*(n+1)//2 if context is None else n*context
-    return projections+4*pairs*h*hd
+def coefficient(c):
+    d=c['hidden_size'];k=d//c['num_attention_heads']*c['num_key_value_heads']
+    return 4*d*d+4*d*k+6*d*c['intermediate_size']
 
-def decoder_flops(config, layer_lengths, final_tokens, decode_tokens=100):
+def prefill(c,n):return coefficient(c)*n+4*c['hidden_size']*n*n
+
+def decode(c,n,steps=100):
+    return steps*coefficient(c)+4*c['hidden_size']*(steps*n+steps*(steps+1)//2)
+
+def fro_extra(c,stream_lengths,av_counts,query_counts=None,anchor_counts=None):
+    d=c['hidden_size'];k=d//c['num_attention_heads']*c['num_key_value_heads']
+    queries=query_counts or [32]*len(stream_lengths);anchors=anchor_counts or [32]*len(stream_lengths)
+    return {'fro_prefix':sum(prefill(c,n) for n in stream_lengths),
+            'fro_qk':sum(2*q*d*d+2*n*d*k+2*q*n*d for n,q in zip(stream_lengths,queries)),
+            'fro_cross':sum(2*av*anchors[1-i]*d for i,av in enumerate(av_counts))}
+
+def decoder_flops(config,layer_lengths,final_tokens,decode_tokens=100,kv_lengths=None,extras=None,auxiliary_delta=None):
     if len(layer_lengths)!=config['num_hidden_layers']:raise ValueError('Layer count mismatch')
-    # One LM-head projection on prefill; subsequent decode steps produce remaining tokens.
-    prefill=sum(layer_flops(config,n) for n in layer_lengths)
-    decode=sum(config['num_hidden_layers']*layer_flops(config,1,final_tokens+i) for i in range(1,decode_tokens))
-    head=2*decode_tokens*config['hidden_size']*config['vocab_size']
-    return {'decoder_prefill':prefill,'decoder_decode_100':decode,'lm_head':head,'decoder_total':prefill+decode+head,
-            'selection_and_auxiliary':None,'total':None,'total_complete':False,
-            'accounting':'analytical; excludes norm/softmax/RoPE; auxiliary/selection FLOPs unmeasured'}
+    kv_lengths=kv_lengths if kv_lengths is not None else [final_tokens]*len(layer_lengths)
+    if len(kv_lengths)!=len(layer_lengths):raise ValueError('Missing KV instrumentation')
+    p=sum(prefill(config,n) for n in layer_lengths);d=sum(decode(config,n,decode_tokens) for n in kv_lengths)
+    extras=extras or {};dagger=p+d+sum(extras.values())
+    return {'convention':'v5_dense_matrix_100_decode_steps','decoder_prefill':p,'decoder_decode_100':d,'decoder_total':p+d,
+            **extras,'flops_dagger':dagger,'auxiliary_delta':auxiliary_delta,'total':None if auxiliary_delta is None else dagger+auxiliary_delta,
+            'total_complete':auxiliary_delta is not None,'layer_kv_lengths':kv_lengths,'excluded':['encoders','lm_head','softmax','normalization','sorting','elementwise operators']}
+
+def reference_cost(c,method,rate,av=32000,text=256):
+    L=c['num_hidden_layers'];n=av+text;small=text+round(av*rate);lengths=[small]*L
+    if method=='full_tokens':lengths=[n]*L
+    elif method=='fastv':lengths=[n]*5+[small]*(L-5)
+    elif method=='omnipack':
+        cut=18 if L==28 else 26;lengths=[text+round(av*rate*2)]*cut+[small]*(L-cut)
+    extras=fro_extra(c,[n//2,n//2],[av//2,av//2]) if method=='fro' else {}
+    return decoder_flops(c,lengths,small,kv_lengths=lengths,extras=extras)['flops_dagger']
+
+def solve_reference_retention(c,method,anchor_rate,av=32000,text=256):
+    target=reference_cost(c,'fro',anchor_rate,av,text)
+    if method=='fro':return anchor_rate,target
+    if method=='full_tokens':return 1.,reference_cost(c,method,1.,av,text)
+    lo,hi=0,av//2 if method=='omnipack' else av
+    while lo<hi:
+        mid=(lo+hi+1)//2
+        if reference_cost(c,method,mid/av,av,text)<=target:lo=mid
+        else:hi=mid-1
+    return lo/av,target

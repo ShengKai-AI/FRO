@@ -23,7 +23,7 @@ validation={'html_to_pdf':'Chromium / Playwright','pages':len(d),'page_sizes_poi
 (R/'validation.json').write_text(json.dumps(validation,ensure_ascii=False,indent=2))
 for i in [0,2,5,len(d)-1]:d[i].get_pixmap(matrix=fitz.Matrix(1.25,1.25)).save(R/f'preview_{i+1}.png')
 print(json.dumps(validation,ensure_ascii=False,indent=2))
-assert len(d)==7
+assert len(d)==8
 assert 'References' in d[-1].get_text() and 'Benchmarks' in d[-1].get_text() and 'Methods' in d[-1].get_text()
 assert all(x not in text for x in ['ActivityNet','PerceptionTest','MLVU','Gemini'])
 assert all(abs(pg.rect.width-595.28)<1 and abs(pg.rect.height-841.89)<1 for pg in d)

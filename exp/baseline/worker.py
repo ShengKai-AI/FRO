@@ -75,6 +75,8 @@ def main():
                 continue
         pending.append(q)
     if not pending:return
+    if job.get('budget_mode')=='matched_flops_dagger' and method!='full_tokens':
+        raise ValueError('Compressed main runs require per-input calibration including auxiliary delta; reference retention alone is insufficient')
     ns=load(native,job['model'],ratio);thinker=ns['thinker']
     if method in ('visionzip','fastvid'):install_encoder_stats(thinker)
     failed=0
@@ -82,7 +84,7 @@ def main():
         started=time.perf_counter();target=out/(q['id']+'.json')
         record={'pair_id':q['id'],'method':method,'model':job['model'],'target_ratio':ratio,'job_sha256':fingerprint,
                 'question_ids':[x['id'] for x in q['questions']],'score_mask':q['score_mask'],
-                'dataset':q['dataset'],'physical_gpu':physical,'pid':os.getpid(),'source_sha256':source_sha256,'model_config_sha256':model_config_sha256,'pairs_sha256':pairs_sha256}
+                'budget_mode':job.get('budget_mode','legacy_equal_retention'),'plan_sha256':job.get('plan_sha256'),'dataset':q['dataset'],'physical_gpu':physical,'pid':os.getpid(),'source_sha256':source_sha256,'model_config_sha256':model_config_sha256,'pairs_sha256':pairs_sha256}
         try:
             cache=Path(job['cache'])/(q['id']+'.pt')
             payload=torch.load(cache,map_location='cpu',weights_only=False)
@@ -128,7 +130,7 @@ def main():
                 layer_prefill_lengths=lens,pre_llm_seconds=selected-started,ttft_seconds=first-started,
                 elapsed_seconds=time.perf_counter()-started,peak_allocated_gib=torch.cuda.max_memory_allocated()/2**30,
                 cache_sha256=digest(cache),prompt_sha256=data['prompt_sha256'],preprocessing=payload['protocol'],
-                flops=decoder_flops(config,lens,int(keep.sum())),
+                flops=decoder_flops(config,lens,int(keep.sum()),kv_lengths=ns['state']['layer_kv_prefill_lengths'],auxiliary_delta=0 if method=='full_tokens' else None),
                 stream_diagnostics=[p.get('score_diagnostics',p.get('aux',{})) for p in parts],
                 modality_counts={name:{'before':int((ids==getattr(thinker.config,name+'_token_id')).sum()),'final':int(keep[ids==getattr(thinker.config,name+'_token_id')].sum())} for name in ('audio','video')})
             if not matched:failed+=1
