@@ -18,6 +18,7 @@ def pool_semantic_scores(video_scores,audio_scores,video_indices,audio_indices,v
   for i in range(1,len(indices)):
    if indices[i]!=indices[i-1]+1:
     chunks.append(scores[start:i].mean());start=i
+  if not indices:return scores.new_empty(0)
   chunks.append(scores[start:].mean())
   return torch.stack(chunks)
  grid_t,grid_h,grid_w=[int(x) for x in video_grid[0]]
@@ -25,6 +26,7 @@ def pool_semantic_scores(video_scores,audio_scores,video_indices,audio_indices,v
  assert len(video_scores)==2*grid_t
  video_per_token=video_scores.reshape(grid_t,2).mean(-1).repeat_interleave(per_grid)
  assert len(video_per_token)==len(video_indices)
+ if not audio_indices:return pool(video_per_token,video_indices),audio_scores.new_empty(0)
  segments=((torch.arange(len(audio_indices),device=audio_scores.device,dtype=torch.float32)+.5)*len(audio_scores)/len(audio_indices)).long().clamp(max=len(audio_scores)-1)
  return pool(video_per_token,video_indices),pool(audio_scores[segments],audio_indices)
 
@@ -40,22 +42,25 @@ class Selector:
   tokens=word_tokenize(data['record']['question']);tags=pos_tag(tokens)
   keywords=[word for word,tag in tags if tag.startswith('NN') or tag.startswith('JJ')]
   text_input=keywords if keywords else tokens
-  n=len(data['visual']);audio=data['audio'];chunk=len(audio)//n
-  tracks=torch.from_numpy(audio[:n*chunk]).view(n,1,-1)
+  n=len(data['visual']);audio=data['audio']
+  if audio is not None:
+   chunk=len(audio)//n;tracks=torch.from_numpy(audio[:n*chunk]).view(n,1,-1)
   images=torch.stack([self.transform(x) for x in data['visual']])
   a=[];v=[]
   for start in range(0,n,8):
-   ((af,_,_),_),_=self.net(audio=tracks[start:start+8].cuda());a.append(af)
+   if audio is not None:
+    ((af,_,_),_),_=self.net(audio=tracks[start:start+8].cuda());a.append(af)
    ((_,vf,_),_),_=self.net(image=images[start:start+8].cuda());v.append(vf)
-  a=torch.cat(a);v=torch.cat(v)
+  a=torch.cat(a) if a else None;v=torch.cat(v)
   # Follow the released scorer's text argument shape, including its keyword joining.
   ((_,_,t),_),_=self.net(text=text_input)
-  a=a/a.norm(dim=-1,keepdim=True);v=v/v.norm(dim=-1,keepdim=True);t=t/t.norm(dim=-1,keepdim=True)
-  la=(self.net.logit_scale_at.exp().clamp(1,100)*a@t.T).mean(-1)
+  if a is not None:a=a/a.norm(dim=-1,keepdim=True)
+  v=v/v.norm(dim=-1,keepdim=True);t=t/t.norm(dim=-1,keepdim=True)
+  la=(self.net.logit_scale_at.exp().clamp(1,100)*a@t.T).mean(-1) if a is not None else v.new_empty(0)
   lv=(self.net.logit_scale.exp().clamp(1,100)*v@t.T).mean(-1)
-  av=la.mean();vv=lv.mean()
+  vv=lv.mean();av=la.mean() if a is not None else vv
   if abs(int(vv)-int(av))<=3.7 or not keywords:av=vv
-  regime=True if av<vv else False if av>vv else 'uniform'
+  regime=True if a is None or av<vv else False if av>vv else 'uniform'
   ids=inputs['input_ids'][0];config=self.config
   vl=(ids==config.video_token_id).nonzero(as_tuple=True)[0].tolist();al=(ids==config.audio_token_id).nonzero(as_tuple=True)[0].tolist()
   groups=defaultdict(int)
@@ -65,4 +70,4 @@ class Selector:
     if i and index-seq[i-1]!=1:group+=1
     groups[index]=group
   pv,pa=pool_semantic_scores(lv,la,vl,al,inputs['video_grid_thw'])
-  return {'pooled_logits_v':pv,'pooled_logits_a':pa,'logits_a':la,'logits_v':lv,'video_first':regime,'args':SimpleNamespace(prune=True,prune_ratio_a=1-self.ratio,prune_ratio_v=1-self.ratio),'token_id2group':groups,'v_lst':vl,'a_lst':al,'visual':data['visual']},{'a_score':float(la.mean()),'v_score':float(lv.mean()),'regime':str(regime),'query_language':'English translation; released English NLTK/AudioCLIP pipeline','keywords':keywords,'semantic_pooling':'actual contiguous modality-token groups; fixes hardcoded four-frame grouping for capped/fractional FPS','video_groups':len(pv),'audio_groups':len(pa)}
+  return {'pooled_logits_v':pv,'pooled_logits_a':pa,'logits_a':la,'logits_v':lv,'video_first':regime,'args':SimpleNamespace(prune=True,prune_ratio_a=1-self.ratio,prune_ratio_v=1-self.ratio),'token_id2group':groups,'v_lst':vl,'a_lst':al,'visual':data['visual']},{'a_score':float(la.mean()) if a is not None else None,'v_score':float(lv.mean()),'regime':str(regime),'query_language':'English translation; released English NLTK/AudioCLIP pipeline','keywords':keywords,'semantic_pooling':'actual contiguous modality-token groups; fixes hardcoded four-frame grouping for capped/fractional FPS','video_groups':len(pv),'audio_groups':len(pa)}

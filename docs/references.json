@@ -2,40 +2,40 @@
   "sort": "first public arXiv submission date, ascending within group",
   "benchmarks": [
     [
-      "2023-11-28",
-      "Kunchang Li et al.",
-      "MVBench: A Comprehensive Multi-modal Video Understanding Benchmark",
-      "2311.17005"
+      "2025-08-27",
+      "Nannan Zhu et al.",
+      "CVBench: Benchmarking Cross-Video Synergies for Complex Multimodal Reasoning",
+      "2508.19542"
     ],
     [
-      "2024-05-31",
-      "Chaoyou Fu et al.",
-      "Video-MME: The First-Ever Comprehensive Evaluation Benchmark of Multi-modal LLMs in Video Analysis",
-      "2405.21075"
+      "2025-11-10",
+      "Tianhao Peng et al.",
+      "MVU-Eval: Towards Multi-Video Understanding Evaluation for Multimodal LLMs",
+      "2511.07250"
     ],
     [
-      "2024-07-22",
-      "Haoning Wu, Dongxu Li, Bei Chen, and Junnan Li.",
-      "LongVideoBench: A Benchmark for Long-context Interleaved Video-Language Understanding",
-      "2407.15754"
+      "2025-11-15",
+      "Jingyao Li et al.",
+      "CrossVid: A Comprehensive Benchmark for Evaluating Cross-Video Reasoning in Multimodal Large Language Models",
+      "2511.12263"
     ],
     [
-      "2025-02-06",
-      "Jack Hong et al.",
-      "WorldSense: Evaluating Real-world Omnimodal Understanding for Multimodal LLMs",
-      "2502.04326"
+      "2026-03-24",
+      "Purui Bai et al.",
+      "MVPBench: A Multi-Video Perception Evaluation Benchmark for Multi-Modal Video Understanding",
+      "2603.22756"
     ],
     [
-      "2025-03-25",
-      "Yudong Yang et al.",
-      "Audio-centric Video Understanding Benchmark without Text Shortcut",
-      "2503.19951"
+      "2026-05-08",
+      "Sara Ghazanfari et al.",
+      "SYNCR: A Cross-Video Reasoning Benchmark with Synthetic Grounding",
+      "2605.08412"
     ],
     [
-      "2025-05-23",
-      "Ziwei Zhou, Rui Wang, Zuxuan Wu, and Yu-Gang Jiang.",
-      "Daily-Omni: Towards Audio-Visual Reasoning with Temporal Alignment across Modalities",
-      "2505.17862"
+      "2026-06-01",
+      "Peiwen Sun et al.",
+      "X-Stream: Exploring MLLMs as Multiplexers for Multi-Stream Understanding",
+      "2606.02482"
     ]
   ],
   "methods": [
@@ -52,12 +52,6 @@
       "2411.15024"
     ],
     [
-      "2024-12-05",
-      "Senqiao Yang et al.",
-      "VisionZip: Longer is Better but Not Necessary in Vision Language Models",
-      "2412.04467"
-    ],
-    [
       "2025-03-14",
       "Leqi Shen et al.",
       "FastVID: Dynamic Density Pruning for Fast Video Large Language Models",
@@ -68,12 +62,6 @@
       "Jin Xu et al.",
       "Qwen2.5-Omni Technical Report",
       "2503.20215"
-    ],
-    [
-      "2025-05-20",
-      "Xuyang Liu, Yiyu Wang, Junpeng Ma, and Linfeng Zhang.",
-      "Video Compression Commander: Plug-and-Play Inference Acceleration for Video Large Language Models",
-      "2505.14454"
     ],
     [
       "2025-11-18",

@@ -1,0 +1,169 @@
+{
+  "scope": "one real native two-video MVU-Eval question, both models, eight baselines, 45% reference budget; execution validation, not benchmark accuracy",
+  "physical_gpu_count": 4,
+  "passed": 16,
+  "failed": 0,
+  "fro_executed": false,
+  "rows": [
+    {
+      "model": "3B",
+      "method": "fastvid",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.0003380219087040226,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-cdbf6827-dda0-1a50-8b17-1decc354048b"
+    },
+    {
+      "model": "7B",
+      "method": "dycoke_ttm",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.0004765495543751497,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-898848ff-113b-983d-6d3b-89d4240710ba"
+    },
+    {
+      "model": "7B",
+      "method": "fastv",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 0.003420143281277044,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-898848ff-113b-983d-6d3b-89d4240710ba"
+    },
+    {
+      "model": "3B",
+      "method": "omnipack",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.00025699980626869845,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-cdbf6827-dda0-1a50-8b17-1decc354048b"
+    },
+    {
+      "model": "3B",
+      "method": "random",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.00043449904616399415,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-cdbf6827-dda0-1a50-8b17-1decc354048b"
+    },
+    {
+      "model": "3B",
+      "method": "omnizip",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 0.0028909560613263885,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-cdbf6827-dda0-1a50-8b17-1decc354048b"
+    },
+    {
+      "model": "7B",
+      "method": "random",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.0004765495543751497,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-ffc2ca94-dcb4-83f4-b80a-867d69515be0"
+    },
+    {
+      "model": "3B",
+      "method": "fastv",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 0.0021279472744355488,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-704a22f6-0065-1169-012c-ad8becde82b7"
+    },
+    {
+      "model": "3B",
+      "method": "dycoke_ttm",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.00043449904616399415,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-704a22f6-0065-1169-012c-ad8becde82b7"
+    },
+    {
+      "model": "7B",
+      "method": "full_tokens",
+      "status": "passed",
+      "fro_anchor_retention": null,
+      "flops_relative_error": null,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-898848ff-113b-983d-6d3b-89d4240710ba"
+    },
+    {
+      "model": "7B",
+      "method": "omniselect",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.0003948667285806895,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-898848ff-113b-983d-6d3b-89d4240710ba"
+    },
+    {
+      "model": "3B",
+      "method": "full_tokens",
+      "status": "passed",
+      "fro_anchor_retention": null,
+      "flops_relative_error": null,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-704a22f6-0065-1169-012c-ad8becde82b7"
+    },
+    {
+      "model": "3B",
+      "method": "omniselect",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 7.467200839639254e-05,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-704a22f6-0065-1169-012c-ad8becde82b7"
+    },
+    {
+      "model": "7B",
+      "method": "omnizip",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": -0.0013122471766656707,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-ffc2ca94-dcb4-83f4-b80a-867d69515be0"
+    },
+    {
+      "model": "7B",
+      "method": "fastvid",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 0.002843088884428413,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-ffc2ca94-dcb4-83f4-b80a-867d69515be0"
+    },
+    {
+      "model": "7B",
+      "method": "omnipack",
+      "status": "passed",
+      "fro_anchor_retention": 0.45,
+      "flops_relative_error": 0.0005070716067354653,
+      "original_tokens": 9295,
+      "generated_tokens": 3,
+      "physical_gpu": "GPU-ffc2ca94-dcb4-83f4-b80a-867d69515be0"
+    }
+  ]
+}

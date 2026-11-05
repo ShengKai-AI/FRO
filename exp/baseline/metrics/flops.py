@@ -4,6 +4,9 @@ Matches the reviewed plan exactly at its reference input. Real runs pass measure
 per-layer prefill and KV lengths. LM head, encoders and elementwise operators are
 excluded from FLOPs-dagger; unmeasured auxiliary delta is never silently zeroed.
 """
+from contextvars import ContextVar
+DECODE_STEPS=ContextVar("decode_steps",default=100)
+
 def coefficient(c):
     d=c['hidden_size'];k=d//c['num_attention_heads']*c['num_key_value_heads']
     return 4*d*d+4*d*k+6*d*c['intermediate_size']
@@ -20,13 +23,14 @@ def fro_extra(c,stream_lengths,av_counts,query_counts=None,anchor_counts=None):
             'fro_qk':sum(2*q*d*d+2*n*d*k+2*q*n*d for n,q in zip(stream_lengths,queries)),
             'fro_cross':sum(2*av*anchors[1-i]*d for i,av in enumerate(av_counts))}
 
-def decoder_flops(config,layer_lengths,final_tokens,decode_tokens=100,kv_lengths=None,extras=None,auxiliary_delta=None):
+def decoder_flops(config,layer_lengths,final_tokens,decode_tokens=None,kv_lengths=None,extras=None,auxiliary_delta=None):
+    decode_tokens=DECODE_STEPS.get() if decode_tokens is None else decode_tokens
     if len(layer_lengths)!=config['num_hidden_layers']:raise ValueError('Layer count mismatch')
     kv_lengths=kv_lengths if kv_lengths is not None else [final_tokens]*len(layer_lengths)
     if len(kv_lengths)!=len(layer_lengths):raise ValueError('Missing KV instrumentation')
     p=sum(prefill(config,n) for n in layer_lengths);d=sum(decode(config,n,decode_tokens) for n in kv_lengths)
     extras=extras or {};dagger=p+d+sum(extras.values())
-    return {'convention':'v5_dense_matrix_100_decode_steps','decoder_prefill':p,'decoder_decode_100':d,'decoder_total':p+d,
+    return {'convention':f'dense_matrix_{decode_tokens}_decode_steps','decoder_prefill':p,f'decoder_decode_{decode_tokens}':d,'decoder_total':p+d,
             **extras,'flops_dagger':dagger,'auxiliary_delta':auxiliary_delta,'total':None if auxiliary_delta is None else dagger+auxiliary_delta,
             'total_complete':auxiliary_delta is not None,'layer_kv_lengths':kv_lengths,'excluded':['encoders','lm_head','softmax','normalization','sorting','elementwise operators']}
 

@@ -43,7 +43,8 @@
     "paper": "2511.14582",
     "official": "https://github.com/KD-TAO/OmniZip",
     "implementation": "OmniPack/baselines/omnizip + local partial-group core",
-    "adaptation": "audio-priority starting rho pairs (.30,.60) / (.40,.70); common offset count calibration including anchors"
+    "adaptation": "audio-priority starting rho pairs (.30,.60) / (.40,.70); common offset count calibration including anchors",
+    "native_visual_only_adapter": "Visual-only inputs use the released unguided visual compression branch; no audio tokens are created."
   },
   "omniselect": {
     "paper": "2605.18041",
@@ -54,13 +55,15 @@
       "AudioCLIP",
       "CLIP",
       "ESResNeXt"
-    ]
+    ],
+    "native_visual_only_adapter": "Visual-only inputs retain AudioCLIP image/text similarity and POS filtering; no audio scores or synthetic audio tokens are created."
   },
   "omnipack": {
     "paper": "2608.03812",
     "official": "https://github.com/RowanSu/OmniPack",
     "implementation": "official two-stage compressor",
-    "adaptation": "stage-I 2*r, stage-II .5; joint stage-II at 18 (7B) / 26 (3B)"
+    "adaptation": "stage-I 2*r, stage-II .5; joint stage-II at 18 (7B) / 26 (3B)",
+    "native_visual_only_adapter": "Visual-only inputs run native visual pre-LLM merging and joint stage-II pruning; absent audio branch is skipped."
   },
   "fro": {
     "paper": null,

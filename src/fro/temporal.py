@@ -17,37 +17,23 @@ def attach_metadata(parts,data,tokenizer,module,query_mode='all'):
         start=max(i for i,t in enumerate(ids) if t in (151646,151656))+1
         tail=ids[start:]
         text=tokenizer.decode(tail,skip_special_tokens=False,clean_up_tokenization_spaces=False)
-        m1=text.index('Q1 (CLIP 1): ');a=m1+len('Q1 (CLIP 1): ')
-        m2=text.index('Q2 (CLIP 2): ');b=m2+len('Q2 (CLIP 2): ')
-        end=text.index('<|im_end|>',b)
+        a=text.index(data['record']['question']);end=text.index('<|im_end|>',a)
         stops=[0]+[len(tokenizer.decode(tail[:i+1],skip_special_tokens=False,clean_up_tokenization_spaces=False)) for i in range(len(tail))]
         def span(lo,hi):
             ix=[start+j for j in range(len(tail)) if stops[j]<hi and stops[j+1]>lo and tail[j]<151643]
             assert ix,(lo,hi,text)
             return torch.tensor(ix,device=part['embeds'].device)
-        part['content_queries']=torch.cat((span(a,m2),span(b,end)))
-        ranges=((a,m2),(b,end))
-        own_lo,own_hi=ranges[part['source_slot']-1]
-        if query_mode=='own': part['selected_queries']=span(own_lo,own_hi)
-        elif query_mode=='both_content': part['selected_queries']=part['content_queries']
+        part['content_queries']=span(a,end)
+        if query_mode in ('own','both_content'):part['selected_queries']=part['content_queries']
         elif query_mode in ('own_stem','both_stems','own_options'):
-            stems=[];options=[]
-            for lo,hi in ranges:
-                label=re.search(r'(?m)^A\. ',text[lo:hi])
-                assert label is not None
-                cut=lo+label.start()
-                stems.append(span(lo,cut));options.append(span(cut,hi))
-            if query_mode=='both_stems': part['selected_queries']=torch.cat(stems)
-            elif query_mode=='own_stem': part['selected_queries']=stems[part['source_slot']-1]
-            else: part['selected_queries']=options[part['source_slot']-1]
-        prefix=text.index('Use evidence in this clip')
-        part['generic_queries']=span(prefix,m1)
+            label=re.search(r'(?m)^A\. ',text[a:end]);assert label is not None
+            cut=a+label.start()
+            part['selected_queries']=span(cut,end) if query_mode=='own_options' else span(a,cut)
+        prefix=text.index('Use evidence in this video')
+        part['generic_queries']=span(prefix,a)
         if module=='option_evidence':
-            lo,hi=(a,m2) if part['source_slot']==1 else (b,end)
-            block=text[lo:hi]
-            labels=list(re.finditer(r'(?m)^([ABCD])\. ',block))
-            assert [m.group(1) for m in labels]==list('ABCD')
-            part['option_queries']=[span(lo+m.end(),lo+labels[j+1].start() if j<3 else hi) for j,m in enumerate(labels)]
+            labels=list(re.finditer(r'(?m)^([A-Z])\. ',text[a:end]));assert len(labels)>=2
+            part['option_queries']=[span(a+m.end(),a+labels[j+1].start() if j+1<len(labels) else end) for j,m in enumerate(labels)]
 
 
 @torch.inference_mode()

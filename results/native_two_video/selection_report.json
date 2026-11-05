@@ -1,0 +1,160 @@
+{
+  "protocol": "native_two_video_mc",
+  "datasets": [
+    {
+      "dataset": "CrossVid",
+      "source_revision": "4cc98eee034e6f3950c19803485402661f54c1f8",
+      "raw_questions": 9015,
+      "exact_two_input_questions": 4531,
+      "selected_mc_questions": 1411,
+      "single_choice_questions": 1411,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "MOC": 566,
+        "MSR": 594,
+        "PI": 251
+      },
+      "option_repairs": 0,
+      "unique_source_paths": 285,
+      "audio_filter": "not_required",
+      "paper": "https://arxiv.org/html/2511.12263v2",
+      "final_selected_questions": 1411,
+      "ready_questions": 1409,
+      "download_complete": false,
+      "input_relations": {
+        "two_views": 1160,
+        "same_source_two_clips": 251
+      }
+    },
+    {
+      "dataset": "X-Stream",
+      "source_revision": "eb3e571f79cc9d997cdfbe5b2e36477a61d5ee16",
+      "raw_questions": 4222,
+      "exact_two_input_questions": 3750,
+      "selected_mc_questions": 1748,
+      "single_choice_questions": 1748,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "future": 1188,
+        "instant": 417,
+        "retrospective": 35,
+        "comprehensive": 108
+      },
+      "option_repairs": 0,
+      "unique_source_paths": 527,
+      "audio_filter": "pending_media_probe",
+      "paper": "https://arxiv.org/html/2606.02482v1",
+      "final_selected_questions": null,
+      "ready_questions": null,
+      "download_complete": false,
+      "probed_source_videos": 383,
+      "probed_with_audio": 209,
+      "fully_probed_candidate_questions": 1138,
+      "confirmed_audio_questions_so_far": 540
+    },
+    {
+      "dataset": "CVBench",
+      "source_revision": "81dfee5940506da256e3d52b76087307d2fe20f7",
+      "raw_questions": 1000,
+      "exact_two_input_questions": 487,
+      "selected_mc_questions": 487,
+      "single_choice_questions": 487,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "Cross-video Scene Recognition": 82,
+        "Multi-video Attribute Recognition": 27,
+        "Cross-video Event Retrieval": 12,
+        "Cross-video Anomaly Detection": 31,
+        "Multi-video Temporal Reasoning": 19,
+        "Multi-video Key-Action Recognition": 51,
+        "Cross-video Object Recognition": 31,
+        "Joint-video Summarization": 28,
+        "Cross-video Procedural Transfer": 40,
+        "Cross-video Entity Matching": 53,
+        "Video Difference Caption": 40,
+        "Cross-video Counterfactual Reasoning": 39,
+        "Multi-view Scene Understanding": 22,
+        "Joint-video Spatial Navigating": 9,
+        "Joint-video Counting": 3
+      },
+      "option_repairs": 1,
+      "unique_source_paths": 450,
+      "audio_filter": "not_required",
+      "paper": "https://arxiv.org/html/2508.19542v4",
+      "final_selected_questions": 487,
+      "ready_questions": 487,
+      "download_complete": true
+    },
+    {
+      "dataset": "MVU-Eval",
+      "source_revision": "e449b251501e2d4f46efc3f7e3d1e0dc6e8644c7",
+      "raw_questions": 1824,
+      "exact_two_input_questions": 238,
+      "selected_mc_questions": 238,
+      "single_choice_questions": 238,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "OR": 8,
+        "TR": 124,
+        "SU": 1,
+        "Counting": 1,
+        "Comparison": 104
+      },
+      "option_repairs": 0,
+      "unique_source_paths": 422,
+      "audio_filter": "not_required",
+      "paper": "https://arxiv.org/html/2511.07250v1",
+      "final_selected_questions": 238,
+      "ready_questions": 238,
+      "download_complete": true
+    },
+    {
+      "dataset": "MVPBench",
+      "source_revision": null,
+      "raw_questions": 907,
+      "exact_two_input_questions": 112,
+      "selected_mc_questions": 112,
+      "single_choice_questions": 112,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "Daily life action evaluation": 42,
+        "Professional action evaluation": 70
+      },
+      "option_repairs": 0,
+      "unique_source_paths": 220,
+      "audio_filter": "not_required",
+      "paper": "https://arxiv.org/html/2603.22756v1",
+      "final_selected_questions": 112,
+      "ready_questions": 32,
+      "download_complete": false
+    },
+    {
+      "dataset": "SYNCR",
+      "source_revision": "e842ea1c7679a39f14c8a9b55b4ce0deeca648f6",
+      "raw_questions": 4000,
+      "exact_two_input_questions": 2000,
+      "selected_mc_questions": 2000,
+      "single_choice_questions": 2000,
+      "multiple_select_questions": 0,
+      "exact_duplicate_extra_rows": 0,
+      "task_counts": {
+        "Object_Re_identification": 500,
+        "Spatial_Measurement": 500,
+        "Numerical_Comparison": 500,
+        "Kinematic_Comparison": 500
+      },
+      "option_repairs": 0,
+      "unique_source_paths": 2290,
+      "audio_filter": "not_required",
+      "paper": "https://arxiv.org/html/2605.08412v1",
+      "final_selected_questions": 2000,
+      "ready_questions": 2000,
+      "download_complete": true
+    }
+  ]
+}

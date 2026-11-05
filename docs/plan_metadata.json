@@ -1,32 +1,43 @@
 {
-  "version": "v5_matched_flops",
+  "version": "v6_native_two_video_single_choice",
   "benchmarks": [
-    "AVUT",
-    "WorldSense",
-    "Video-MME",
-    "MVBench",
-    "LongVideoBench",
-    "DailyOmni"
+    "CrossVid",
+    "X-Stream",
+    "CVBench",
+    "MVU-Eval",
+    "MVPBench",
+    "SYNCR"
   ],
-  "questions": 14140,
-  "pairs": 7071,
+  "selected_question_count": null,
+  "configurations": 34,
   "models": [
-    "Qwen2.5-Omni-7B",
-    "Qwen2.5-Omni-3B"
+    "Qwen2.5-Omni-3B",
+    "Qwen2.5-Omni-7B"
   ],
-  "format": "A4 portrait",
-  "source": "HTML",
-  "fonts": [
-    "Times New Roman",
-    "SimSun"
-  ],
-  "references": 15,
   "pages": 8,
-  "budget_mode": "matched_flops_dagger",
-  "fro_anchor_retentions": [
-    0.45,
-    0.35
+  "references": 13,
+  "date": "2026-11-05",
+  "runtime_config_changed": false,
+  "previous_plan": "archive/pre-native-dual-20261105/experiment_plan.pdf",
+  "plan_pdf_sha256": "a8964c206032a56ffc893e0e37a85ab99b66a1ecd99ee835c35f62b1d59d1dcf",
+  "plan_html_sha256": "ecf8a717c5757af22397942c384be054272f035b42f18ee0d9eb9bcc70540309",
+  "active_dataset_revision": "native_two_video_mc_20261105",
+  "active_run_config": "exp/baseline/configs/native_pilot.yaml",
+  "execution_status": "baseline_pilot_running",
+  "active_methods": [
+    "full_tokens",
+    "random",
+    "fastv",
+    "fastvid",
+    "dycoke_ttm",
+    "omnizip",
+    "omniselect",
+    "omnipack"
   ],
-  "auxiliary_delta_complete": false,
-  "plan_pdf_sha256": "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6"
+  "pilot_max_questions_per_dataset": 200,
+  "legacy_metadata": "archive/pre_native_two_video_20261105/plan_metadata.json",
+  "compatible_prior_plan_sha256": [
+    "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6",
+    "f41ede807ac0214e815c8b2870c739e02332e78c1f407eee4d3fef9b8ed035db"
+  ]
 }

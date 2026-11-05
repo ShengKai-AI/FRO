@@ -1,0 +1,7 @@
+dataset,raw_questions,exact_two_input_questions,selected_mc_questions,final_selected_questions,ready_questions,download_complete,unique_source_paths,audio_filter
+CrossVid,9015,4531,1411,1411,1409,False,285,not_required
+X-Stream,4222,3750,1748,,,False,527,pending_media_probe
+CVBench,1000,487,487,487,487,True,450,not_required
+MVU-Eval,1824,238,238,238,238,True,422,not_required
+MVPBench,907,112,112,112,32,False,220,not_required
+SYNCR,4000,2000,2000,2000,2000,True,2290,not_required

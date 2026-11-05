@@ -38,7 +38,7 @@ def apply_video(part,stream,thinker,method,ratio,seed):
  feat=part['embeds'][0,vs];n=len(vs);t,h,w=map(int,grid.tolist());tpf=h*w//4
  assert n==t*tpf and n>0
  attention=part.get('vision_attention');keys=part.get('vision_keys');calls=0
- def algorithm(r):
+ def implementation(r):
   nonlocal calls
   calls+=1
   # Fixed, item-local selector RNG: budget calibration must not tune random draws.
@@ -62,22 +62,31 @@ def apply_video(part,stream,thinker,method,ratio,seed):
    emb,mask=video_visionzip(part['embeds'].clone(),ids[None],attention,keys,vid,r,r*.1,2,4,grid[None])
    idx=mask[vs].nonzero().flatten();return emb[0,vs[idx]],idx
   raise ValueError(method)
- features,indices=algorithm(ratio);native_ratio=len(indices)/n;effective=ratio
+ from exp.baseline.metrics.operations import MatrixCounter
+ last_cost=0
+ def algorithm(r):
+  nonlocal last_cost
+  counter=MatrixCounter()
+  with counter:result=implementation(r)
+  last_cost=counter.total
+  return result
+ features,indices=algorithm(ratio);selected_cost=last_cost;native_ratio=len(indices)/n;effective=ratio
  # Find nearest attainable native output count, without editing ranking or merged outputs.
- if abs(native_ratio-ratio)>.005 and method not in ('uniform',):
-  best=(abs(native_ratio-ratio),ratio,features,indices);lo,hi=0.001,.999
-  for _ in range(10):
+ # DyCoke already returns round(n * ratio) tokens; searching it again can cross its anchor floor.
+ if abs(native_ratio-ratio)>.0002 and method not in ('uniform','dycoke_ttm'):
+  best=(abs(native_ratio-ratio),ratio,features,indices,last_cost);lo,hi=0.001,.999
+  for _ in range(14):
    r=(lo+hi)/2;f,k=algorithm(r);observed=len(k)/n
-   if abs(observed-ratio)<best[0]:best=(abs(observed-ratio),r,f,k)
+   if abs(observed-ratio)<best[0]:best=(abs(observed-ratio),r,f,k,last_cost)
    if observed<ratio:lo=r
    else:hi=r
-   if best[0]<=.005:break
-  _,effective,features,indices=best
+   if best[0]<=.0002:break
+  _,effective,features,indices,selected_cost=best
  assert len(indices)==len(indices.unique()) and len(indices)==len(features)
  order=indices.argsort();indices=indices[order];features=features[order]
  keep=torch.ones_like(ids,dtype=torch.bool);keep[vs]=False;keep[vs[indices]]=True
  emb=part['embeds'].clone();emb[0,vs[indices]]=features
  out=common_audio(slice_part(part,keep,emb),part,aid,ratio)
- out['aux']={'native_video_ratio_at_target_parameter':native_ratio,'effective_parameter':effective,'calibration_calls':calls,'actual_video_ratio':len(indices)/n,'budget_matched':abs(len(indices)/n-ratio)<=.005,'selector_seed':seed,'audio_policy':'uniform', 'target_ratio':ratio,'variant':method}
+ out['aux']={'selected_auxiliary_flops':selected_cost,'native_video_ratio_at_target_parameter':native_ratio,'effective_parameter':effective,'calibration_calls':calls,'actual_video_ratio':len(indices)/n,'budget_matched':abs(len(indices)/n-ratio)<=.005,'selector_seed':seed,'audio_policy':'uniform', 'target_ratio':ratio,'variant':method}
  for key in ['vision_attention','vision_keys']:out.pop(key,None)
  return out

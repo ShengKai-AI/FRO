@@ -1,0 +1,24 @@
+{
+  "version": "v6_native_two_video_single_choice",
+  "benchmarks": [
+    "CrossVid",
+    "X-Stream",
+    "CVBench",
+    "MVU-Eval",
+    "MVPBench",
+    "SYNCR"
+  ],
+  "selected_question_count": null,
+  "configurations": 34,
+  "models": [
+    "Qwen2.5-Omni-3B",
+    "Qwen2.5-Omni-7B"
+  ],
+  "pages": 8,
+  "references": 13,
+  "date": "2026-11-05",
+  "runtime_config_changed": false,
+  "previous_plan": "archive/pre-native-dual-20261105/experiment_plan.pdf",
+  "plan_pdf_sha256": "a8964c206032a56ffc893e0e37a85ab99b66a1ecd99ee835c35f62b1d59d1dcf",
+  "plan_html_sha256": "ecf8a717c5757af22397942c384be054272f035b42f18ee0d9eb9bcc70540309"
+}

@@ -45,7 +45,8 @@ def load(method, model_name, ratio, max_new_tokens=32):
       out=orig(*a,**kw);mask('stage1',out[1]);return out
      mod.omnizip=wrap
     elif m=='omniselect':
-     mod=importlib.import_module('OmniSelect');orig=mod.omniselect
+     mod=importlib.import_module('OmniSelect')
+     from exp.baseline.methods.omniselect_groups import omniselect as orig
      def wrap(*a,**kw):
       out=orig(*a,**kw);mask('stage1',out);return out
      mod.omniselect=wrap
@@ -56,7 +57,11 @@ def load(method, model_name, ratio, max_new_tokens=32):
      def wa(*a,**kw):
       out=oa(*a,**kw);mask('a',out[1]);state['stage1']=state['v']&state['a'];return out
      def ws(*a,**kw):
-      torch.cuda.synchronize();t=time.perf_counter();out=os2(*a,**kw);torch.cuda.synchronize();state['stage2_seconds']=time.perf_counter()-t;mask('joint_stage2',out[-1]);return out
+      from exp.baseline.metrics.operations import MatrixCounter
+      counter=MatrixCounter();torch.cuda.synchronize();t=time.perf_counter()
+      with counter:out=os2(*a,**kw)
+      state['inner_auxiliary_flops']=state.get('inner_auxiliary_flops',0)+counter.total
+      torch.cuda.synchronize();state['stage2_seconds']=time.perf_counter()-t;mask('joint_stage2',out[-1]);return out
      mod.video_spatiotemporal_merge=wv;mod.audio_temporal_merge=wa;mod.stage2_token_selection=ws
     
     if m=='fastv':
@@ -65,7 +70,11 @@ def load(method, model_name, ratio, max_new_tokens=32):
      fastmod=importlib.import_module('baselines.fastv.modeling_qwen2_5_omni_fastv')
      original_drop=fastmod.fastv_global_drop_tokens
      def capture_drop(*args,**kwargs):
-      result=original_drop(*args,**kwargs);mask('joint_stage2',result[-1]);return result
+      from exp.baseline.metrics.operations import MatrixCounter
+      counter=MatrixCounter()
+      with counter:result=original_drop(*args,**kwargs)
+      state['inner_auxiliary_flops']=state.get('inner_auxiliary_flops',0)+counter.total
+      mask('joint_stage2',result[-1]);return result
      fastmod.fastv_global_drop_tokens=capture_drop
      thinker.model.forward=MethodType(Qwen2_5OmniThinkerTextModel_forward_fastv,thinker.model)
     
@@ -75,11 +84,27 @@ def load(method, model_name, ratio, max_new_tokens=32):
     
     @torch.inference_mode()
     def compress(data):
-     state.clear();inputs={k:v.to('cuda',dtype=torch.bfloat16 if v.is_floating_point() else v.dtype) for k,v in data['inputs'].items()};ids=inputs['input_ids'][0]
+     state.clear();inputs={k:v.to('cuda',dtype=torch.bfloat16 if v.is_floating_point() else v.dtype,non_blocking=True) for k,v in data['inputs'].items()};ids=inputs['input_ids'][0]
      state['stage1']=torch.ones_like(ids,dtype=torch.bool);extra={};aux={}
      if selector is not None:
-      if data.get('audio') is None: raise ValueError('OmniSelect missing-audio adaptation has not been validated')
-      need,aux=selector.prepare(data,inputs);extra['prune_need']=need
+      # Calibration changes only retention, so question-specific AudioCLIP scores
+      # are immutable across its trials. Attribute their full logical cost to
+      # every selected invocation even when reuse avoids recalculating them.
+      from exp.baseline.metrics.operations import MatrixCounter
+      if os.environ.get('FRO_DISABLE_SELECTOR_CACHE')=='1':data.pop('_selector_prepared',None)
+      if '_selector_prepared' not in data:
+       semantic_counter=MatrixCounter()
+       with semantic_counter:need,semantic_aux=selector.prepare(data,inputs)
+       data['_selector_prepared']=(need,dict(semantic_aux),semantic_counter.total)
+       reused_semantic=0
+      else:reused_semantic=data['_selector_prepared'][2]
+      need,semantic_aux,semantic_cost=data['_selector_prepared']
+      need=dict(need);need['args']=argparse.Namespace(prune=True,prune_ratio_a=1-selector.ratio,prune_ratio_v=1-selector.ratio)
+      aux=dict(semantic_aux,reused_selector_auxiliary_flops=reused_semantic,semantic_auxiliary_flops=semantic_cost)
+      extra['prune_need']=need
+     if data.get('audio') is None and m in ('omniselect','omnizip','omnipack'):
+      from .native_visual import compress_visual
+      return compress_visual(locals_ns,data,inputs,extra.get('prune_need'),aux)
      thinker.nframes=data['record']['frame_count'];handle=thinker.model.layers[0].register_forward_pre_hook(first_layer,with_kwargs=True)
      try:
       try:thinker(**inputs,use_audio_in_video=data['record'].get('audio_present',True),use_cache=False,return_dict=True,**extra)
@@ -122,7 +147,8 @@ def load(method, model_name, ratio, max_new_tokens=32):
     @torch.inference_mode()
     def joint_features(data,parts):
      j={k:v.to('cuda') for k,v in data['joint'].items()};ids=j['input_ids'][0];emb=thinker.get_input_embeddings()(ids[None]);keep=torch.ones_like(ids,dtype=torch.bool)
-     pos,delta=thinker.get_rope_index(j['input_ids'],None,j['video_grid_thw'],j['attention_mask'],True,j['feature_attention_mask'].sum(-1),j['video_second_per_grid'])
+     if 'position_ids' in j:pos=j['position_ids']
+     else:pos,delta=thinker.get_rope_index(j['input_ids'],None,j['video_grid_thw'],j['attention_mask'],True,j['feature_attention_mask'].sum(-1),j['video_second_per_grid'])
      for kind in ['audio','video']:
       tokenid=getattr(thinker.config,kind+'_token_id');slots=(ids==tokenid).nonzero().flatten();offset=0
       for part in parts:
@@ -136,4 +162,5 @@ def load(method, model_name, ratio, max_new_tokens=32):
     
     
     
-    return locals()
+    locals_ns=locals()
+    return locals_ns

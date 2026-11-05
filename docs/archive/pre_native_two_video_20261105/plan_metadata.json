@@ -1,0 +1,55 @@
+{
+  "version": "v5.1_method_subset",
+  "benchmarks": [
+    "AVUT",
+    "WorldSense",
+    "Video-MME",
+    "MVBench",
+    "LongVideoBench",
+    "DailyOmni"
+  ],
+  "questions": 14140,
+  "pairs": 7071,
+  "models": [
+    "Qwen2.5-Omni-7B",
+    "Qwen2.5-Omni-3B"
+  ],
+  "format": "A4 portrait",
+  "source": "HTML",
+  "fonts": [
+    "Times New Roman",
+    "SimSun"
+  ],
+  "references": 13,
+  "pages": 8,
+  "budget_mode": "matched_flops_dagger",
+  "fro_anchor_retentions": [
+    0.45,
+    0.35
+  ],
+  "auxiliary_delta_complete": false,
+  "plan_pdf_sha256": "e9232fc370aa46ff7be356bf76ede62cd5158e41c8a0bafd7cef6a882f272cd3",
+  "removed_methods": [
+    "visionzip",
+    "vidcom2"
+  ],
+  "compatible_prior_plan_sha256": [
+    "f1c079dd0dd9dff8e189f24ae40f7b0ed7ff84c931bd3d1016a65e94c3b337b6",
+    "f41ede807ac0214e815c8b2870c739e02332e78c1f407eee4d3fef9b8ed035db"
+  ],
+  "compatibility_reason": "Only VisionZip and VidCom2 removed; retained methods, inputs, pairing, budgets and scoring unchanged",
+  "configurations": 34,
+  "total_pair_evaluations": 240414,
+  "deferred_datasets": {
+    "LongVideoBench": "user requested skip pending dataset access",
+    "MVBench": "NTU RGB+D videos unavailable; user requested proceeding with other tasks"
+  },
+  "active_pair_evaluations": 149668,
+  "fastvid_integer_allocation": "global video budget allocated proportionally to temporal segments; native ranking and merging preserved",
+  "active_benchmarks": [
+    "Video-MME",
+    "DailyOmni",
+    "AVUT",
+    "WorldSense"
+  ]
+}

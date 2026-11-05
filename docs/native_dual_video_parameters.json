@@ -1,0 +1,107 @@
+{
+  "version": "v6_native_two_video_single_choice",
+  "status": "documentation_plan_not_runtime_config",
+  "models": [
+    "3B",
+    "7B"
+  ],
+  "methods": [
+    "full_tokens",
+    "random",
+    "fastv",
+    "fastvid",
+    "dycoke_ttm",
+    "omnizip",
+    "omniselect",
+    "omnipack",
+    "fro"
+  ],
+  "fro_anchor_retentions": [
+    0.45,
+    0.35
+  ],
+  "budget_mode": "per_sample_matched_flops",
+  "budget_tolerance": 0.005,
+  "max_input_tokens": 32256,
+  "decode": {
+    "do_sample": false,
+    "num_beams": 1,
+    "max_new_tokens": 64
+  },
+  "flops_standard_decode_steps": 64,
+  "seed": 20261031,
+  "question_protocol": "one_native_question_two_video_inputs",
+  "question_filter": "exactly_two_required_video_inputs_and_native_single_choice",
+  "datasets": [
+    {
+      "name": "CrossVid",
+      "paper": "https://arxiv.org/html/2511.12263v2",
+      "frames_per_stream": 32,
+      "sampling": "uniform_full_valid_interval",
+      "long_edge": 360,
+      "audio": false,
+      "basis": "Appendix C / Table 8: Qwen2.5-Omni-7B 64 total frames, equal video allocation; long edge 360. Same setting chosen for 3B.",
+      "selected_questions": null
+    },
+    {
+      "name": "X-Stream",
+      "paper": "https://arxiv.org/html/2606.02482v1",
+      "frames_per_stream": 128,
+      "sampling": "2fps_then_uniform_cap_over_visible_prefix",
+      "max_pixels": 100352,
+      "audio": true,
+      "audio_sample_rate": 16000,
+      "max_audio_seconds_per_stream": 120,
+      "long_audio_segments": 24,
+      "segment_seconds": 5,
+      "visible_interval": "official_start_to_query_timestamp",
+      "question_types": [
+        "Instant",
+        "Backward"
+      ],
+      "audio_filter": "at_least_one_stream_has_decodable_audio; report both-stream-audio separately",
+      "basis": "Paper preprocessing uses 2fps; frame/pixel/audio caps are this plan; causal prefix MC accuracy is an offline adaptation.",
+      "selected_questions": null
+    },
+    {
+      "name": "CVBench",
+      "paper": "https://arxiv.org/html/2508.19542v4",
+      "frames_per_stream": 8,
+      "sampling": "uniform_full_valid_interval",
+      "max_pixels": 200704,
+      "audio": false,
+      "basis": "Section 4.1: 8 frames/video, 448x448; preserve aspect ratio with 448^2 pixel budget as this plan adaptation.",
+      "selected_questions": null
+    },
+    {
+      "name": "MVU-Eval",
+      "paper": "https://arxiv.org/html/2511.07250v1",
+      "frames_per_stream": 32,
+      "sampling": "uniform_full_valid_interval",
+      "long_edge": 720,
+      "audio": false,
+      "basis": "Appendix B.2.1: 32 frames/video, long edge 720 for Qwen series.",
+      "selected_questions": null
+    },
+    {
+      "name": "MVPBench",
+      "paper": "https://arxiv.org/html/2603.22756v1",
+      "frames_per_stream": 64,
+      "sampling": "uniform_full_valid_interval",
+      "max_pixels": 200704,
+      "audio": false,
+      "basis": "Paper IV-A standardizes video-role prompts; does not state a universal frame cap. 64 frames and 448^2 pixels selected here for action comparison.",
+      "selected_questions": null
+    },
+    {
+      "name": "SYNCR",
+      "paper": "https://arxiv.org/html/2605.08412v1",
+      "frames_per_stream": 128,
+      "sampling": "all_native_frames_up_to_cap_then_uniform",
+      "max_pixels": 100352,
+      "audio": false,
+      "basis": "Native Habitat/Kubric/CLEVRER clips have 100/60/128 frames; retain native temporal detail up to128 as this plan, not paper inference cap. Honor crop metadata.",
+      "selected_questions": null
+    }
+  ]
+}

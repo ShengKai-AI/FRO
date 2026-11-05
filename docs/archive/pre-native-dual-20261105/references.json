@@ -1,0 +1,85 @@
+{
+  "sort": "first public arXiv submission date, ascending within group",
+  "benchmarks": [
+    [
+      "2023-11-28",
+      "Kunchang Li et al.",
+      "MVBench: A Comprehensive Multi-modal Video Understanding Benchmark",
+      "2311.17005"
+    ],
+    [
+      "2024-05-31",
+      "Chaoyou Fu et al.",
+      "Video-MME: The First-Ever Comprehensive Evaluation Benchmark of Multi-modal LLMs in Video Analysis",
+      "2405.21075"
+    ],
+    [
+      "2024-07-22",
+      "Haoning Wu, Dongxu Li, Bei Chen, and Junnan Li.",
+      "LongVideoBench: A Benchmark for Long-context Interleaved Video-Language Understanding",
+      "2407.15754"
+    ],
+    [
+      "2025-02-06",
+      "Jack Hong et al.",
+      "WorldSense: Evaluating Real-world Omnimodal Understanding for Multimodal LLMs",
+      "2502.04326"
+    ],
+    [
+      "2025-03-25",
+      "Yudong Yang et al.",
+      "Audio-centric Video Understanding Benchmark without Text Shortcut",
+      "2503.19951"
+    ],
+    [
+      "2025-05-23",
+      "Ziwei Zhou, Rui Wang, Zuxuan Wu, and Yu-Gang Jiang.",
+      "Daily-Omni: Towards Audio-Visual Reasoning with Temporal Alignment across Modalities",
+      "2505.17862"
+    ]
+  ],
+  "methods": [
+    [
+      "2024-03-11",
+      "Liang Chen et al.",
+      "An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play Inference Acceleration for Large Vision-Language Models",
+      "2403.06764"
+    ],
+    [
+      "2024-11-22",
+      "Keda Tao et al.",
+      "DyCoke: Dynamic Compression of Tokens for Fast Video Large Language Models",
+      "2411.15024"
+    ],
+    [
+      "2025-03-14",
+      "Leqi Shen et al.",
+      "FastVID: Dynamic Density Pruning for Fast Video Large Language Models",
+      "2503.11187"
+    ],
+    [
+      "2025-03-26",
+      "Jin Xu et al.",
+      "Qwen2.5-Omni Technical Report",
+      "2503.20215"
+    ],
+    [
+      "2025-11-18",
+      "Keda Tao et al.",
+      "OmniZip: Audio-Guided Dynamic Token Compression for Fast Omnimodal Large Language Models",
+      "2511.14582"
+    ],
+    [
+      "2026-05-18",
+      "Morunliu Yang et al.",
+      "OmniSelect: Dynamic Modality-Aware Token Compression for Efficient Omni-modal Large Language Models",
+      "2605.18041"
+    ],
+    [
+      "2026-08-04",
+      "Wanshun Su et al.",
+      "OmniPack: Unified Token Compression for Efficient Omni-modal Large Language Models",
+      "2608.03812"
+    ]
+  ]
+}

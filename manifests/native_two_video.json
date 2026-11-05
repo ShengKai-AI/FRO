@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "protocol": "native_two_video_mc",
+  "selection": "exactly two native video inputs, >=2 answer options and resolvable reference choice; evaluation split only",
+  "xstream_audio": "at least one of two original streams contains an audio track; also report both-stream audio count",
+  "datasets": {
+    "CrossVid": {
+      "repo_id": "Chuntianli/CrossVid",
+      "revision": "4cc98eee034e6f3950c19803485402661f54c1f8",
+      "source_folder": "CrossVid",
+      "annotation_files": [
+        "QA/BU.json",
+        "QA/CC.json",
+        "QA/FSA.json",
+        "QA/CCQA.json",
+        "QA/MOC.json",
+        "QA/MSR.json",
+        "QA/PEA.json",
+        "QA/NC.json",
+        "QA/PI.json",
+        "QA/PSS.json"
+      ],
+      "annotation_checksums": {
+        "QA/BU.json": {
+          "size": 492993,
+          "sha256": "81d1be67e5cad6abd7c39ca878a06034ec4a4ee45a59c3a85f72c3ba1a19ef1c"
+        },
+        "QA/CC.json": {
+          "size": 470956,
+          "sha256": "e8efdd6d0ef317231dd8edd45c5f244cd60b41ba29dc44cfb078969922b938a5"
+        },
+        "QA/FSA.json": {
+          "size": 726069,
+          "sha256": "83a4fb03f3e5849c570adfbdf2a9d9246b24b4a1732f25f03fd5353a4374a89d"
+        },
+        "QA/CCQA.json": {
+          "size": 815367,
+          "sha256": "ec7b03f1a624741e20317a23e7c9d359bd884b7791f3db95fd59a11b35ae5b5e"
+        },
+        "QA/MOC.json": {
+          "size": 431371,
+          "sha256": "b85ac2d1ab0b4bfc436f5234369ebce15c030ef8a25256f5bcad24a33232156d"
+        },
+        "QA/MSR.json": {
+          "size": 494340,
+          "sha256": "edbfd5924e16c50829f676ba70f7fb63dc507c53858ed45c7dc149b87b9898c6"
+        },
+        "QA/PEA.json": {
+          "size": 939375,
+          "sha256": "66dd3c560c9f37131860669666ac1350dc947cbffe35c07bb631ea4178e41728"
+        },
+        "QA/NC.json": {
+          "size": 711324,
+          "sha256": "b4daa53b8c96e9205c49eb2706d20c65ea826a8a5c4a8377b59d50b4451a4a88"
+        },
+        "QA/PI.json": {
+          "size": 193316,
+          "sha256": "1022f47bc5d30926c2fbd9b5ead9847ed757a26b2b3cfda196c50202c56bca5b"
+        },
+        "QA/PSS.json": {
+          "size": 657895,
+          "sha256": "613366a6995624d5d436f819ff60148897750698506cabcf88556884e86fc929"
+        }
+      },
+      "paper": "https://arxiv.org/html/2511.12263v2"
+    },
+    "X-Stream": {
+      "repo_id": "spw2000/X-stream",
+      "revision": "eb3e571f79cc9d997cdfbe5b2e36477a61d5ee16",
+      "source_folder": "X-stream",
+      "annotation_files": [
+        "eval_relative.json",
+        "archives/archives.json"
+      ],
+      "annotation_checksums": {
+        "eval_relative.json": {
+          "size": 6499831,
+          "sha256": "3170a29e4dba8d8cd4dcbb443dcce5d295cd21d6c7c0a55f3f37a8e1398c612b"
+        },
+        "archives/archives.json": {
+          "size": 3097,
+          "sha256": "bcf68e75056e859da14265f52d497ad12301699eb7ca9a6e285bf846bbb84cd4"
+        }
+      },
+      "paper": "https://arxiv.org/html/2606.02482v1"
+    },
+    "CVBench": {
+      "repo_id": "Dongyh35/CVBench",
+      "revision": "81dfee5940506da256e3d52b76087307d2fe20f7",
+      "source_folder": "CVBench",
+      "annotation_files": [
+        "data/test-00000-of-00001.parquet"
+      ],
+      "annotation_checksums": {
+        "data/test-00000-of-00001.parquet": {
+          "size": 147877,
+          "sha256": "0d86c3c3e8a0fb63f3b79c3f01e6f2408fa1f261441122eb71786dfc7b7a80ec"
+        }
+      },
+      "paper": "https://arxiv.org/html/2508.19542v4"
+    },
+    "MVU-Eval": {
+      "repo_id": "MVU-Eval-Team/MVU-Eval-Data",
+      "revision": "e449b251501e2d4f46efc3f7e3d1e0dc6e8644c7",
+      "source_folder": "MVU-Eval-Data",
+      "annotation_files": [
+        "MVU_Eval_QAs.json"
+      ],
+      "annotation_checksums": {
+        "MVU_Eval_QAs.json": {
+          "size": 1297025,
+          "sha256": "e934e0776f20b16e30dfd436c22f104eb166abc2250746ab32c6a0cb58f9d5ef"
+        }
+      },
+      "paper": "https://arxiv.org/html/2511.07250v1"
+    },
+    "SYNCR": {
+      "repo_id": "CrossVideoReasoning/SYNCR",
+      "revision": "e842ea1c7679a39f14c8a9b55b4ce0deeca648f6",
+      "source_folder": "SYNCR",
+      "annotation_files": [
+        "test/metadata.jsonl"
+      ],
+      "annotation_checksums": {
+        "test/metadata.jsonl": {
+          "size": 3355364,
+          "sha256": "b53627704f11e9263d60b7c1dd7cee6d9d0dd84ca48ac46075ee66610df41d44"
+        }
+      },
+      "paper": "https://arxiv.org/html/2605.08412v1"
+    },
+    "MVPBench": {
+      "source_folder": "MVPBench",
+      "drive_folder": "https://drive.google.com/drive/folders/1geVRGz6SFT8726R0tpljdwf3kJxvFFza",
+      "paper": "https://arxiv.org/html/2603.22756v1",
+      "archives": [
+        {
+          "id": "1o0-cmU1Dphz_lxq_7T-6TglcsFlOTVMr",
+          "name": "Caption-free temporal segment splicing.zip",
+          "size": 2366259357,
+          "annotation": "µù╢σ║ÅΘÇ╗Φ╛æ/shixu.jsonl",
+          "annotation_sha256": "d7c140b09ec60aec899e934d928650803c49d04268012045949338860458798e"
+        },
+        {
+          "id": "1dTVXrG1OlMDObW8IZ9Y5BtRVZ42TiV3h",
+          "name": "Caption-guided temporal segment splicing.zip",
+          "size": 2451389738,
+          "annotation": "YouCookII/output.jsonl",
+          "annotation_sha256": "2c19e5e8da8b1a87a2f0dc7e24be87b51080c666dbf81963b0656f76fd27d804"
+        },
+        {
+          "id": "1tEOuJ8RznbdRb71NT6WcEVyWEh-Nb2qR",
+          "name": "Common sense judgment of physical laws.zip",
+          "size": 1070054343,
+          "annotation": "Σ╗╗σèí7-Σ╕ûτòîτƒÑΦ»å/logic.jsonl",
+          "annotation_sha256": "26062be44b0808f162421d8270a33d35f97ec79f819c02d833a129a34924041d"
+        },
+        {
+          "id": "10tbwrBmFrjkDjIvK_0cvQ5pE-_5cPCfA",
+          "name": "Daily life action evaluation.zip",
+          "size": 7648492696,
+          "annotation": "EPIC_Skills2018_videos/output.jsonl",
+          "annotation_sha256": "2880d3f0a76879f7d4e2cddfa7585ec3daabbe19ab32a64c9b6c3d5f58fa472e"
+        },
+        {
+          "id": "1wv9mz6MVUTu-dY-EG0YFDe1YS11F7s2_",
+          "name": "Dance style matching.zip",
+          "size": 1252459162,
+          "annotation": "dance_style/dance_style.jsonl",
+          "annotation_sha256": "ac1a5fe30219577790e27bcbadcc5fac728c362ec4736f8b0f83f2bb581ff1be"
+        },
+        {
+          "id": "11wfaih8kXvcH64__zsMZ0uvY32Kd_KTY",
+          "name": "Gait recognition matching.zip",
+          "size": 6371490014,
+          "annotation": "Gait/gait.jsonl",
+          "annotation_sha256": "356c79b290afae38b1c74f378c9b7f25bf8804e04717e8272367a833f45f4217"
+        },
+        {
+          "id": "1_htb17rn8B99Deu8m3ZU-cuCclNZRgXQ",
+          "name": "Multiview visual perception pairing.zip",
+          "size": 201458207,
+          "annotation": "yks_cvpr2016/output.jsonl",
+          "annotation_sha256": "d579e06209aad3cf5779cc3b914b9ec768283cdf44baa437dfe33001dd83a2d0"
+        },
+        {
+          "id": "1VS6kyqj3l9m0LbBqzMaRSry7AYGbV2Wr",
+          "name": "Olympic sports matching.zip",
+          "size": 2306848832,
+          "annotation": "olympic/olympic.jsonl",
+          "annotation_sha256": "de21c1e4692fdaee53546640a6234a8e5e2d94a0612c745e5d69cb6f11306ad4"
+        },
+        {
+          "id": "13wQKcQscx45zlnjB70BePzEXUUYWES3H",
+          "name": "Professional action evaluation.zip",
+          "size": 39156148,
+          "annotation": "AQA-7/output.jsonl",
+          "annotation_sha256": "ff25255db7ecd762ffe2aa6aee10f18d543acc18bf048bba4c66631b606ffed7"
+        },
+        {
+          "id": "1sjKKjZBf06kJt52RYOYdvuvUribPUJAG",
+          "name": "Shooting style matching.zip",
+          "size": 722914697,
+          "annotation": "shooting_style/shooting_style.jsonl",
+          "annotation_sha256": "2e1d4e94d45114e5714e12dc6de099ede12887905e62aeb07a746eacd9777435"
+        },
+        {
+          "id": "1ANXA1z7rSsz9v4DK1PWOdmOnYXjGvZVg",
+          "name": "Video brightness evaluation.zip",
+          "size": 1042183947,
+          "annotation": "SDSD/SDSD.jsonl",
+          "annotation_sha256": "4b4763b7849c7b304753d8c09a2790d246a73d562b0dd7d18d2079ea5e957a7b"
+        },
+        {
+          "id": "1DA_WqR4x8aczU_sw6Ix00Loh7L0i26Am",
+          "name": "Video forensic detection.zip",
+          "size": 798656386,
+          "annotation": "Forensics_detection/output.jsonl",
+          "annotation_sha256": "b9c8404ca06999d2459593802bd77eb605f19b63ad914e9f33f49f29f46433bb"
+        },
+        {
+          "id": "1me7YdHuL5Z6g_jsP6Z0K0sUsgQId4ZMs",
+          "name": "Weather condition evaluation.zip",
+          "size": 3397282338,
+          "annotation": "weather/weather.jsonl",
+          "annotation_sha256": "c89ea5e83c631d194aab97ac58af389e169749bfc53bef480afb554bed8dde6f"
+        }
+      ]
+    }
+  }
+}

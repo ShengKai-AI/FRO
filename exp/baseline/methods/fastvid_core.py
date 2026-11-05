@@ -39,7 +39,10 @@ def compress(features, grid, attention, ratio):
 
     vision_tokens = []
 
-    frame_retain_num = int(frame_w * frame_h * self.fastvid_retention_ratio)
+    # Allocate a global integer budget proportionally across temporal segments.
+    # This removes frame-wide count jumps while retaining native ranking/merging.
+    total_retain_num = max(1, round(video_len * self.fastvid_retention_ratio))
+    assigned_frames = 0
 
     seg_index_start = prompt_start_len
     for seg_i in range(segment_num):
@@ -48,7 +51,8 @@ def compress(features, grid, attention, ratio):
         cur_global_features = segments_global_features[seg_i]
         cur_seg_len, frm_len = cur_attn_weights.shape
 
-        seg_retain_num = frame_retain_num * cur_seg_len
+        seg_retain_num = round(total_retain_num * (assigned_frames + cur_seg_len) / frame_num) - round(total_retain_num * assigned_frames / frame_num)
+        assigned_frames += cur_seg_len
         seg_context_num = max(int(seg_retain_num * self.fastvid_STPrune_d), 1)
         seg_salient_num = seg_retain_num - seg_context_num
 

@@ -1,0 +1,127 @@
+{
+  "html_to_pdf": "Chromium / Playwright",
+  "pages": 8,
+  "page_sizes_points": [
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ],
+    [
+      594.9599609375,
+      841.9199829101562
+    ]
+  ],
+  "embedded_fonts": [
+    "",
+    "AAAAAA+TimesNewRomanPS-BoldMT",
+    "BAAAAA+SimSun",
+    "CAAAAA+TimesNewRomanPSMT"
+  ],
+  "font_load": [
+    {
+      "family": "Times New Roman",
+      "status": "loaded",
+      "weight": "400"
+    },
+    {
+      "family": "Times New Roman",
+      "status": "loaded",
+      "weight": "700"
+    },
+    {
+      "family": "Times New Roman",
+      "status": "unloaded",
+      "weight": "400"
+    },
+    {
+      "family": "SimSun",
+      "status": "loaded",
+      "weight": "400"
+    }
+  ],
+  "layout": [
+    {
+      "page": "1",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 750.84375,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "2",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 750.84375,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "3",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 581.90625,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "4",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 743.296875,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "5",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 627.171875,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "6",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 745.140625,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "7",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 783.875,
+      "footerTop": 985.109375
+    },
+    {
+      "page": "8",
+      "height": 1009,
+      "scroll": 1009,
+      "lastContentBottom": 664.078125,
+      "footerTop": 985.109375
+    }
+  ],
+  "page_errors": [],
+  "reference_last_page": true,
+  "links": 58
+}

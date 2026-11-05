@@ -1,7 +1,0 @@
-{
-  "name": "DailyOmni",
-  "split": "test",
-  "expected_questions": 1197,
-  "max_frames": 128,
-  "subtitles": false
-}
