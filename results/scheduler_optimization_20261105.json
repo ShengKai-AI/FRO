@@ -1,0 +1,54 @@
+{
+  "dataset": "MVU-Eval",
+  "timestamp": 1793881545.0083456,
+  "before": {
+    "seconds": 599.787317276001,
+    "done": 767,
+    "gpu_util": [
+      49.9,
+      51.9,
+      46.7,
+      51.7
+    ],
+    "evaluations_per_minute": 76.72719758231104
+  },
+  "after": {
+    "wall_seconds": 297.07921743392944,
+    "evaluations": 644,
+    "evaluations_per_minute": 130.0663181146071,
+    "mean_gpu_utilization": [
+      66.49,
+      70.69,
+      59.58,
+      67.71
+    ],
+    "container_cpu_cores_mean": 5.411256442930243,
+    "note": "Live sequential workload windows; method and sample mix differs, not a controlled end-to-end speedup benchmark."
+  },
+  "scheduler": {
+    "path": "/root/FRO/runs/native-baseline-pilot-20261105/scheduler-v2/suite.py",
+    "sha256": "ed8f8daba3f0661402f263e9f861b98a6b1a50b4240304f4ecd9dfb8b0cf67f1",
+    "window": 200,
+    "prep_workers": 24,
+    "batch_pairs": 16,
+    "poll_seconds": 0.25,
+    "monitor_seconds": 3.0,
+    "cache_reserve_gib": 24.0,
+    "started": 1793881096.5791066
+  },
+  "validation": {
+    "preserved_outputs_verified": 3968,
+    "unique_outputs": 4842,
+    "passed": 4841,
+    "failed": 0,
+    "blocked": 0,
+    "physical_gpus": 4,
+    "completed_per_gpu_since_restart": {
+      "GPU-704a22f6-0065-1169-012c-ad8becde82b7": 229,
+      "GPU-cdbf6827-dda0-1a50-8b17-1decc354048b": 224,
+      "GPU-ffc2ca94-dcb4-83f4-b80a-867d69515be0": 220,
+      "GPU-898848ff-113b-983d-6d3b-89d4240710ba": 200
+    },
+    "inference_source_sha256": "f00a98d654931b44a6863fae02bec5a728881ba7b9ff1b2b8ae942c889fb847e"
+  }
+}

@@ -1,5 +1,5 @@
 """Sequential datasets, four-GPU ready queues, resumable baseline-only pilot."""
-import argparse,json,os,signal,subprocess,sys,time
+import argparse,fcntl,json,os,signal,subprocess,sys,time
 from pathlib import Path
 import yaml
 from exp.baseline.runtime.paths import ROOT
@@ -7,8 +7,10 @@ from exp.baseline.worker import atomic
 from scripts.native_pilot_results import score
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--run',default='native-baseline-pilot-20261105');a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--run',default='native-baseline-pilot-20261105');ap.add_argument('--window',type=int,default=200);ap.add_argument('--prep-workers',type=int,default=24);ap.add_argument('--batch-pairs',type=int,default=16);ap.add_argument('--scheduler-file',type=Path);a=ap.parse_args()
     parent=ROOT/'runs'/a.run;parent.mkdir(parents=True,exist_ok=True)
+    controller_lock=(parent/'controller.lock').open('a')
+    fcntl.flock(controller_lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     plan=ROOT/'exp/baseline/configs/native_pilot.yaml';cfg=yaml.safe_load(plan.read_text())
     assert 'fro' not in cfg['methods']
     child=None;stopping=False;results={}
@@ -25,7 +27,10 @@ def main():
         assert len(questions)<=200 and all(q['protocol']=='native_two_video_mc' for q in questions)
         run_name=a.run+'-'+name;run=ROOT/'runs'/run_name;log=(parent/(name+'.log')).open('a')
         cache=Path('/dev/shm/fro-native-pair-cache')/run_name
-        cmd=[sys.executable,'-u','-m','exp.baseline.suite','--plan',str(plan),'--dataset',name,'--pairs',str(folder/'questions.json'),'--media-map',str(folder/'media_map.json'),'--run',run_name,'--cache',str(cache),'--window','32','--prep-workers','16','--batch-pairs','8']
+        cmd=[sys.executable,'-u','-m','exp.baseline.suite','--plan',str(plan),'--dataset',name,'--pairs',str(folder/'questions.json'),'--media-map',str(folder/'media_map.json'),'--run',run_name,'--cache',str(cache),'--window',str(a.window),'--prep-workers',str(a.prep_workers),'--batch-pairs',str(a.batch_pairs)]
+        if a.scheduler_file:
+            # Explicit orchestration overlay: imports still resolve to the frozen source.
+            cmd[2:4]=[str(ROOT/'scripts/launch_native_scheduler.py'),str(a.scheduler_file.resolve())]
         for attempt in range(2):
             if stopping:break
             child=subprocess.Popen(cmd,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT)

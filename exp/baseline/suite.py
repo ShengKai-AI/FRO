@@ -1,5 +1,5 @@
 """Resumable full-method campaign: bounded shared inputs, resident GPU consumers."""
-import argparse,collections,concurrent.futures,fcntl,hashlib,json,multiprocessing,os,signal,subprocess,sys,time
+import argparse,collections,concurrent.futures,fcntl,hashlib,json,multiprocessing,os,shutil,signal,subprocess,sys,time
 from pathlib import Path
 import yaml
 from .runtime.paths import ROOT
@@ -7,7 +7,8 @@ from .scheduler.monitor import snapshot,permitted
 from .worker import atomic
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--plan',type=Path,default=ROOT/'exp/baseline/configs/experiment.yaml');ap.add_argument('--dataset',required=True);ap.add_argument('--pairs',type=Path,required=True);ap.add_argument('--media-map',type=Path,required=True);ap.add_argument('--run',required=True);ap.add_argument('--cache',type=Path);ap.add_argument('--gpus');ap.add_argument('--window',type=int,default=48);ap.add_argument('--prep-workers',type=int,default=16);ap.add_argument('--batch-pairs',type=int,default=8);ap.add_argument('--reuse-run',type=Path,action='append',default=[]);ap.add_argument('--exclude-reused-methods',nargs='*',default=[]);a=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--plan',type=Path,default=ROOT/'exp/baseline/configs/experiment.yaml');ap.add_argument('--dataset',required=True);ap.add_argument('--pairs',type=Path,required=True);ap.add_argument('--media-map',type=Path,required=True);ap.add_argument('--run',required=True);ap.add_argument('--cache',type=Path);ap.add_argument('--gpus');ap.add_argument('--window',type=int,default=48);ap.add_argument('--prep-workers',type=int,default=16);ap.add_argument('--batch-pairs',type=int,default=8);ap.add_argument('--poll-seconds',type=float,default=.25);ap.add_argument('--monitor-seconds',type=float,default=3.);ap.add_argument('--cache-reserve-gib',type=float,default=24.);ap.add_argument('--reuse-run',type=Path,action='append',default=[]);ap.add_argument('--exclude-reused-methods',nargs='*',default=[]);a=ap.parse_args()
+    if a.poll_seconds<=0 or a.monitor_seconds<=0 or min(a.window,a.prep_workers,a.batch_pairs)<1:raise ValueError('Invalid scheduling limits')
     run=ROOT/'runs'/a.run;cache=a.cache or ROOT/'data/processed'/a.run
     for p in (run,cache,run/'jobs',run/'outputs',run/'logs',run/'resident',run/'retired_inputs'):p.mkdir(parents=True,exist_ok=True)
     lock=(run/'campaign.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -18,6 +19,8 @@ def main():
     cfg={'stage':'native_pilot' if native else 'all_methods','runtime_plan_sha256':hashlib.sha256(a.plan.read_bytes()).hexdigest(),'dataset':a.dataset,'plan_sha256':ph,'budget_mode':plan['budget_mode'],'pairs_sha256':hashlib.sha256(a.pairs.read_bytes()).hexdigest(),'media_map_sha256':hashlib.sha256(a.media_map.read_bytes()).hexdigest(),'models':plan['models'],'methods':plan['methods'],'source_sha256':source_hash,'reuse_runs':[str(p) for p in a.reuse_run]}
     if (run/'campaign.json').exists() and json.loads((run/'campaign.json').read_text())!=cfg:raise ValueError('Frozen campaign changed; use a new campaign directory')
     atomic(run/'campaign.json',cfg)
+    # Scheduling revisions are recorded separately from the frozen inference code.
+    atomic(run/'scheduler.json',{'path':__file__,'sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'window':a.window,'prep_workers':a.prep_workers,'batch_pairs':a.batch_pairs,'poll_seconds':a.poll_seconds,'monitor_seconds':a.monitor_seconds,'cache_reserve_gib':a.cache_reserve_gib,'started':time.time()})
     pairs=[p for b in json.loads(a.pairs.read_text()) for p in b['pairs']];lookup={p['id']:p for p in pairs}
     if native and not all(p.get('protocol')=='native_two_video_mc' and len(p['questions'])==1 and len(p['streams'])==2 for p in pairs):raise ValueError('Invalid native two-video manifest')
     if len(lookup)!=len(pairs):raise ValueError('Duplicate pair IDs')
@@ -50,6 +53,7 @@ def main():
     from .runtime.cache_lifecycle import retire_cache
     pool=concurrent.futures.ProcessPoolExecutor(max_workers=a.prep_workers,mp_context=multiprocessing.get_context('spawn'),initializer=initialize,initargs=(a.dataset,str(a.pairs),str(a.media_map),str(cache)))
     cleanup=concurrent.futures.ThreadPoolExecutor(max_workers=1);retiring={}
+    devices=allowed;last_monitor=0.;input_size_estimate=2*2**30;cache_pressure=False
     def close(uuid,kill=False):
         w=workers[uuid];p=w['process']
         if p.poll() is None:
@@ -69,6 +73,7 @@ def main():
                 except Exception as e:result={'ok':False,'error':str(e)}
                 del preparing[ident]
                 if not result['ok']:blocked[ident]=result;window.pop(ident,None)
+                elif (cache/(ident+'.pt')).exists():input_size_estimate=max(input_size_estimate,(cache/(ident+'.pt')).stat().st_size*1.25)
                 with (run/'preparation.jsonl').open('a') as f:f.write(json.dumps({'pair_id':ident,**result})+'\n')
             for uuid,j in list(active.items()):
                 w=workers[uuid];new=0
@@ -100,14 +105,20 @@ def main():
                     window.pop(ident,None);del retiring[ident]
             while not stopping and pending and len(window)<a.window:
                 p=pending.popleft();window[p['id']]=p
+            cache_pressure=False
             for ident,p in window.items():
                 if stopping or len(preparing)>=a.prep_workers:break
-                if ident not in preparing and not (cache/(ident+'.pt')).exists() and ident not in retiring:preparing[ident]=pool.submit(prepare_pair,p)
+                if ident not in preparing and not (cache/(ident+'.pt')).exists() and ident not in retiring:
+                    # Reserve space for all in-flight writers and stream-cache entries.
+                    if shutil.disk_usage(cache).free < a.cache_reserve_gib*2**30+(len(preparing)+1)*input_size_estimate:
+                        cache_pressure=True;break
+                    preparing[ident]=pool.submit(prepare_pair,p)
             running={key for j in active.values() for key in j['keys']};ready=[i for i in window if i not in preparing and i not in retiring and (cache/(i+'.pt')).exists()]
             for gpu_index,gpu in enumerate(allowed):
                 uuid=gpu['uuid']
                 if stopping or uuid in active:continue
-                candidates={c:[i for i in ready if (i,*c) not in done|set(failed)|running] for c in combinations}
+                unavailable=done|set(failed)|running
+                candidates={c:[i for i in ready if (i,*c) not in unavailable] for c in combinations}
                 current=workers.get(uuid,{}).get('configuration')
                 preferred=plan['models'][gpu_index%len(plan['models'])]
                 ordered=[c for c in combinations if c[0]==preferred]+[c for c in combinations if c[0]!=preferred]
@@ -128,18 +139,25 @@ def main():
                 job={'model':c[0],'method':c[1],'ratio':c[2],'fro_anchor_retention':None if c[1]=='full_tokens' else c[2],'budget_mode':plan['budget_mode'],'plan_sha256':ph,'pairs':str(a.pairs),'cache':str(cache),'pair_ids':batch,'output':str(output),'max_new_tokens':plan['decode']['max_new_tokens'],'flops_decode_tokens':plan.get('flops_decode_tokens',100),'evaluation_protocol':plan.get('evaluation_protocol','paired_questions')}
                 atomic(jobpath,job);w=workers[uuid];w['process'].stdin.write(json.dumps({'job':str(jobpath),'receipt':str(receipt)})+'\n');w['process'].stdin.flush()
                 active[uuid]={'keys':keys,'output':output,'receipt':receipt,'last_progress':now};running.update(keys)
-            counts=collections.Counter('|'.join(map(str,k[1:])) for k in done);devices=snapshot()
-            progress={'time':time.time(),'config':cfg,'controller_pid':os.getpid(),'total_pairs':len(pairs),'total_evaluations':len(pairs)*len(combinations),'passed':len(done),'completed_by_configuration':dict(counts),'completed_per_gpu':dict(finished_per_gpu),'window':len(window),'pending_inputs':len(pending),'preparing':len(preparing),'failed':{'|'.join(map(str,k)):v for k,v in failed.items()},'blocked_inputs':blocked,'gpus':devices,'active':{u:{'pid':workers[u]['process'].pid,'configuration':workers[u]['configuration'],'pairs':[k[0] for k in j['keys']],'log':workers[u]['log'].name} for u,j in active.items()}}
-            atomic(run/'progress.json',progress)
-            with (run/'monitor.jsonl').open('a') as f:f.write(json.dumps(progress)+'\n')
+            report_due=time.monotonic()-last_monitor>=a.monitor_seconds
+            if report_due:devices=snapshot()
+            counts=collections.Counter('|'.join(map(str,k[1:])) for k in done)
+            progress={'time':time.time(),'config':cfg,'controller_pid':os.getpid(),'total_pairs':len(pairs),'total_evaluations':len(pairs)*len(combinations),'passed':len(done),'completed_by_configuration':dict(counts),'completed_per_gpu':dict(finished_per_gpu),'window':len(window),'pending_inputs':len(pending),'preparing':len(preparing),'cache_pressure':cache_pressure,'failed':{'|'.join(map(str,k)):v for k,v in failed.items()},'blocked_inputs':blocked,'gpus':devices,'active':{u:{'pid':workers[u]['process'].pid,'configuration':workers[u]['configuration'],'pairs':[k[0] for k in j['keys']],'log':workers[u]['log'].name} for u,j in active.items()}}
+            if report_due:
+                atomic(run/'progress.json',progress)
+                with (run/'monitor.jsonl').open('a') as f:f.write(json.dumps(progress)+'\n')
+                last_monitor=time.monotonic()
             if len(done)==len(pairs)*len(combinations):break
             if stopping and not active and not preparing:break
-            runnable=any((i,*c) not in done|set(failed) for i in ready for c in combinations)
+            unavailable=done|set(failed)
+            runnable=bool(active) or any((i,*c) not in unavailable for i in ready for c in combinations)
+            if cache_pressure and not active and not preparing and not runnable and not retiring:
+                raise RuntimeError('Shared-input cache has insufficient free space; existing results preserved')
             if not active and not preparing and not runnable and not retiring:
                 # Drop exhausted windows, preserving explicit failure denominator.
                 window.clear()
                 if not pending:break
-            time.sleep(3)
+            time.sleep(a.poll_seconds)
     finally:
         pool.shutdown(wait=True,cancel_futures=True);cleanup.shutdown(wait=True)
         for uuid in list(workers):close(uuid)

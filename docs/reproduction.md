@@ -21,7 +21,11 @@ python -m scripts.native_pilot_results --run runs/native-baseline-pilot-20261105
 
 The pilot selects up to 200 questions per dataset by task-proportional seeded hashing. Video duration affects scheduling, not sample selection. Gold labels are separate from inference manifests. All eight methods share prompts, sampled frames, source order and temporal bounds; FRO is excluded. Both models and two compute budgets are configured in `exp/baseline/configs/native_pilot.yaml`. Dataset sampling follows `docs/native_dual_video_parameters.json`.
 
-Each GPU runs one resident model/configuration. Independent samples share a ready queue; 16 CPU processes prepare inputs and workers prefetch the next input asynchronously. Shared frame processing is cached across questions and models. Consumed derived inputs can be retired; original videos and results remain available. Output directories, leases and per-sample atomic writes prevent concurrent result overwrites.
+Each GPU runs one resident model/configuration. Independent samples share a ready queue; up to 24 CPU processes prepare inputs and workers prefetch the next input asynchronously. Shared frame processing is cached across questions and models. Consumed derived inputs can be retired; original videos and results remain available. Output directories, leases and per-sample atomic writes prevent concurrent result overwrites.
+
+The default scheduling window covers up to 200 questions so each loaded configuration can consume more inputs before reloading. Each dispatch contains up to 16 sequential questions (not a tensor batch); dispatch polls every 0.25 seconds, independently of the 3-second GPU monitor. Preparation reserves 24 GiB of shared-memory headroom plus estimated space for in-flight writers. The scheduler records its hash and limits in `scheduler.json`.
+
+For an already frozen run, `--scheduler-file /absolute/path/to/reviewed/suite.py` loads an explicit scheduling revision through `scripts/launch_native_scheduler.py`. Imports and inference fingerprints still resolve to the frozen source. Drain the existing controller before restarting; the parent and dataset locks prevent duplicate controllers. Existing passed outputs are reused, and the scheduling revision is recorded separately.
 
 ## Visual-only adapters and scoring
 
